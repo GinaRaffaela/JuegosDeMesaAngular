@@ -1,0 +1,37 @@
+<main class="container my-5 py-5 d-flex justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="contact-card p-4 p-md-5">
+        <h2 class="section-title mb-4">Iniciar Sesión</h2>
+        
+        <form (ngSubmit)="onSubmit()">
+          <!-- Campo: Usuario o Correo -->
+          <div class="mb-3">
+            <label for="identificador" class="form-label">Nombre de Usuario o Email *</label>
+            <input type="text" id="identificador" name="identificador" class="form-control" placeholder="Ej: admin o cliente&#64;gmail.com" required [(ngModel)]="identificador" autocomplete="username">
+          </div>
+
+          <!-- Campo: Contraseña -->
+          <div class="mb-4">
+            <label for="password" class="form-label">Contraseña *</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required [(ngModel)]="password" autocomplete="current-password">
+          </div>
+
+          <!-- Botón Submit -->
+          <button type="submit" class="btn btn-primary w-100 py-2 fs-5 mb-3">Iniciar Sesión</button>
+        </form>
+
+        <!-- Alerta de feedback general de error -->
+        <div class="alert alert-danger" *ngIf="loginError" role="alert">
+          Usuario o contraseña incorrectos. Por favor, verifica tus datos.
+        </div>
+
+        <!-- Enlaces Adicionales -->
+        <div class="text-center mt-3 fs-6">
+          <p class="mb-1 text-muted">¿No tienes cuenta? <a routerLink="/registro" class="text-emerald fw-bold">Regístrate aquí</a></p>
+          <p class="mb-0"><a routerLink="/recuperar" class="text-warning">¿Olvidaste tu contraseña?</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

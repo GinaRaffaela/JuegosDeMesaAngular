@@ -1,0 +1,60 @@
+<main class="container my-5 py-5 d-flex justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-10 col-lg-7">
+      <div class="contact-card p-4 p-md-5 text-center">
+        
+        <div class="success-checkmark" style="width: 80px; height: 80px; background-color: rgba(16, 185, 129, 0.1); border: 3px solid var(--color-lizard); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3rem; margin: 0 auto 20px; color: var(--color-lizard); box-shadow: 0 0 20px var(--color-lizard-glow);">
+          ✓
+        </div>
+        
+        <h1 class="text-emerald mb-3" style="font-family: var(--font-heading);">¡Pago Realizado con Éxito!</h1>
+        <p class="text-muted fs-5 mb-4">Tu pedido ha sido procesado de manera mágica. Tus tesoros de mesa ya están siendo preparados para despacho.</p>
+        
+        <!-- Tarjeta con el detalle de la orden -->
+        <div class="text-start bg-deep border border-secondary p-4 rounded-3 mb-4" id="order-details-card">
+          <h4 class="text-warning mb-3 border-bottom border-secondary pb-2" style="font-family: var(--font-heading);">Detalle de tu Invocación</h4>
+          
+          <ng-container *ngIf="ticket; else noTicket">
+            <div class="row mb-2">
+              <div class="col-6 text-muted">Código de Orden:</div>
+              <div class="col-6 text-end fw-bold text-white">{{ ticket.id }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6 text-muted">Fecha de Compra:</div>
+              <div class="col-6 text-end text-white">{{ ticket.fecha }}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-6 text-muted">Dirección de Despacho:</div>
+              <div class="col-6 text-end text-white">{{ ticket.direccion }}</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-6 text-muted">Destinatario:</div>
+              <div class="col-6 text-end text-white">{{ ticket.clienteNombre }}</div>
+            </div>
+
+            <div class="border-top border-secondary pt-3 mt-2">
+              <h5 class="text-emerald fs-6 mb-2">Juegos Comprados:</h5>
+              <ul class="list-group list-group-flush" style="max-height: 150px; overflow-y: auto;">
+                <li class="list-group-item bg-transparent text-white border-0 p-1 d-flex justify-content-between fs-6" *ngFor="let game of ticket.juegos">
+                  <span>🎮 {{ game.nombre }} <span class="text-muted">x{{ game.cantidad }}</span></span>
+                  <span class="text-emerald">{{ formatearPrecio(game.precioUnitario * game.cantidad) }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="row mt-3 border-top border-secondary pt-3 fs-5 fw-bold text-emerald">
+              <div class="col-6">Total Simulado Pagado:</div>
+              <div class="col-6 text-end">{{ formatearPrecio(ticket.total) }}</div>
+            </div>
+          </ng-container>
+          
+          <ng-template #noTicket>
+            <p class="text-center text-muted mb-0">No se encontró detalle de compra reciente.</p>
+          </ng-template>
+        </div>
+
+        <a routerLink="/" class="btn btn-primary px-5 py-2 fs-5 mt-2">Volver a la Tienda</a>
+      </div>
+    </div>
+  </div>
+</main>

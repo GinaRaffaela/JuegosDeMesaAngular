@@ -1,0 +1,89 @@
+<section class="category-header" *ngIf="product">
+  <div class="container">
+    <h1>Detalle de Producto</h1>
+    <p>Ficha mística de {{ product.nombre }}. Explora sus secretos antes de añadirlo a tu colección.</p>
+  </div>
+</section>
+
+<main class="container my-5" *ngIf="product">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="contact-card p-4 p-md-5">
+        <div class="row align-items-center">
+          
+          <!-- Columna Imagen -->
+          <div class="col-12 col-md-5 text-center mb-4 mb-md-0">
+            <div class="game-image-wrapper rounded shadow-lg overflow-hidden" style="max-height: 400px; background-color: var(--bg-deep);">
+              <img [src]="product.imagen" [alt]="product.nombre" style="width: 100%; height: auto; object-fit: contain;">
+            </div>
+          </div>
+          
+          <!-- Columna Información -->
+          <div class="col-12 col-md-7 ps-md-5">
+            <span class="badge bg-emerald mb-2" style="font-size: 0.9rem;">{{ product.categoria | titlecase }}</span>
+            <h2 class="display-5 fw-bold mb-3" style="font-family: var(--font-heading); color: var(--color-arcane);">
+              {{ product.nombre }}
+            </h2>
+            
+            <p class="fs-5 text-muted mb-4">
+              {{ product.descripcion }}
+            </p>
+            
+            <!-- Precios -->
+            <div class="mb-4">
+              <ng-container *ngIf="product.descuento > 0; else regularPrice">
+                <div class="d-flex align-items-center gap-3">
+                  <span class="fs-2 fw-bold text-emerald">{{ formatearPrecio(product.precio * (1 - product.descuento / 100)) }}</span>
+                  <span class="fs-5 text-danger text-decoration-line-through">{{ formatearPrecio(product.precio) }}</span>
+                  <span class="badge bg-warning text-dark">{{ product.descuento }}% OFF</span>
+                </div>
+              </ng-container>
+              <ng-template #regularPrice>
+                <span class="fs-2 fw-bold text-white">{{ formatearPrecio(product.precio) }}</span>
+              </ng-template>
+            </div>
+            
+            <!-- Stock & Carrito Acciones -->
+            <div class="p-3 rounded mb-4" style="background-color: var(--bg-deep); border: 1px solid var(--border-glass);">
+              <span class="d-block mb-3" [class.text-danger]="product.stock === 0" [class.text-muted]="product.stock > 0">
+                <strong>Disponibilidad:</strong> 
+                {{ product.stock === 0 ? 'Sin stock (Agotado)' : product.stock + ' unidades en la bóveda' }}
+              </span>
+              
+              <div class="row g-2 align-items-center" *ngIf="product.stock > 0">
+                <div class="col-auto">
+                  <label for="quantity" class="form-label mb-0">Cantidad:</label>
+                </div>
+                <div class="col-auto">
+                  <select id="quantity" name="quantity" class="form-select bg-dark text-white border-secondary" [(ngModel)]="quantity" style="width: 80px;">
+                    <option *ngFor="let num of [].constructor(product.stock); let i = index" [value]="i + 1">
+                      {{ i + 1 }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col">
+                  <button class="btn btn-primary w-100 py-2" (click)="agregarAlCarrito()">
+                    Añadir al Carrito 🛒
+                  </button>
+                </div>
+              </div>
+              
+              <button class="btn btn-danger w-100 py-2" disabled *ngIf="product.stock === 0" style="cursor: not-allowed; opacity: 0.6;">
+                Agotado Temporalmente
+              </button>
+            </div>
+            
+            <!-- Botón Volver -->
+            <div class="mt-4">
+              <a [routerLink]="['/categoria', product.categoria]" class="text-emerald fw-bold d-inline-flex align-items-center gap-2">
+                <span>←</span> Volver a la categoría {{ product.categoria | titlecase }}
+              </a>
+            </div>
+            
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

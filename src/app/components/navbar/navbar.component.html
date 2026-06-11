@@ -1,0 +1,57 @@
+<header class="header">
+  <div class="container-fluid px-md-5 nav-container">
+    <a routerLink="/" class="logo">
+      <img src="assets/logo_lagarto.png" alt="Logo Lagarto Arcano" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--color-arcane);">
+      <div class="logo-text">Lagarto<span>Arcano</span></div>
+    </a>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark p-0">
+      <button class="navbar-toggler menu-toggle border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="nav-menu navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"><a routerLink="/">Inicio</a></li>
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Categorías
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" routerLink="/categoria/estrategia">Estrategia</a></li>
+              <li><a class="dropdown-item" routerLink="/categoria/familiares">Familiares</a></li>
+              <li><a class="dropdown-item" routerLink="/categoria/party">Party Games</a></li>
+              <li><a class="dropdown-item" routerLink="/categoria/cooperativos">Cooperativos</a></li>
+            </ul>
+          </li>
+          
+          <li class="nav-item" routerLinkActive="active"><a routerLink="/contacto">Contacto</a></li>
+          
+          <!-- Enlaces para Invitado -->
+          <ng-container *ngIf="!currentUser">
+            <li class="nav-item" routerLinkActive="active"><a routerLink="/login" class="nav-link">Iniciar Sesión</a></li>
+            <li class="nav-item" routerLinkActive="active"><a routerLink="/registro" class="nav-link">Registrarse</a></li>
+          </ng-container>
+
+          <!-- Enlaces para Cliente -->
+          <ng-container *ngIf="currentUser && currentUser.rol === 'cliente'">
+            <li class="nav-item" routerLinkActive="active">
+              <a routerLink="/cliente/carrito" class="nav-link">
+                🛒 Carrito <span class="badge bg-emerald" id="cart-badge">{{ cartCount }}</span>
+              </a>
+            </li>
+            <li class="nav-item" routerLinkActive="active"><a routerLink="/cliente/perfil" class="nav-link">Mi Perfil</a></li>
+            <li class="nav-item"><a (click)="logout()" style="cursor: pointer;" class="nav-link text-warning">Salir ({{ currentUser.usuario }})</a></li>
+          </ng-container>
+
+          <!-- Enlaces para Administrador -->
+          <ng-container *ngIf="currentUser && currentUser.rol === 'administrador'">
+            <li class="nav-item" routerLinkActive="active"><a routerLink="/admin/productos" class="nav-link">Mantenedor Productos</a></li>
+            <li class="nav-item" routerLinkActive="active"><a routerLink="/admin/clientes" class="nav-link">Mantenedor Clientes</a></li>
+            <li class="nav-item"><a (click)="logout()" style="cursor: pointer;" class="nav-link text-warning">Salir (Admin)</a></li>
+          </ng-container>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</header>

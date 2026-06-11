@@ -1,0 +1,137 @@
+<!-- Encabezado de la Categoría -->
+<section class="category-header">
+  <div class="container">
+    <h1>Tu Carrito Místico</h1>
+    <p>Revisa tus pergaminos y juegos de mesa seleccionados antes de facturar tu compra.</p>
+  </div>
+</section>
+
+<main class="container my-5">
+  <!-- Carrito Vacío -->
+  <div class="text-center py-5" *ngIf="userCart.length === 0" id="cart-empty-msg">
+    <span class="fs-1 d-block mb-3">🛒</span>
+    <h3 style="font-family: var(--font-heading); color: var(--color-arcane);">Tu carrito mágico está vacío</h3>
+    <p class="text-muted mb-4">No has añadido ningún tesoro lúdico todavía.</p>
+    <a routerLink="/" class="btn btn-primary px-4 py-2 fs-5">Volver a la Tienda</a>
+  </div>
+
+  <!-- Carrito Lleno -->
+  <div class="row" *ngIf="userCart.length > 0">
+    <!-- Tabla de Ítems (col-12 col-lg-8) -->
+    <div class="col-12 col-lg-8 mb-4" id="cart-table-wrapper">
+      <div class="contact-card p-3 p-md-4 overflow-auto">
+        <table class="table table-dark table-hover align-middle mb-0" style="min-width: 580px;">
+          <thead>
+            <tr>
+              <th scope="col">Juego</th>
+              <th scope="col" class="text-center">Precio Unit.</th>
+              <th scope="col" class="text-center">Cantidad</th>
+              <th scope="col" class="text-end">Subtotal</th>
+              <th scope="col" class="text-center">Quitar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of userCart">
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="item.imagen" [alt]="item.nombre" style="width: 50px; height: 50px; object-fit: cover; border-radius: var(--radius-sm);">
+                  <div>
+                    <span class="fw-bold d-block text-white">{{ item.nombre }}</span>
+                    <!-- Categoría y Descuento opcionales -->
+                    <span class="badge bg-emerald" style="font-size: 0.7rem; margin-right: 5px;">{{ service.getProductById(item.productId)?.categoria | titlecase }}</span>
+                    <span class="badge bg-warning text-dark" style="font-size: 0.7rem;" *ngIf="service.getProductById(item.productId)?.descuento || 0 > 0">
+                      {{ service.getProductById(item.productId)?.descuento }}% OFF
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <ng-container *ngIf="service.getProductById(item.productId)?.descuento || 0 > 0; else regularPrice">
+                  <span class="d-block text-emerald fw-bold">{{ formatearPrecio(item.precio) }}</span>
+                  <span class="text-danger text-decoration-line-through" style="font-size: 0.8rem;">
+                    {{ formatearPrecio(service.getProductById(item.productId)?.precio || 0) }}
+                  </span>
+                </ng-container>
+                <ng-template #regularPrice>
+                  <span class="text-white">{{ formatearPrecio(item.precio) }}</span>
+                </ng-template>
+              </td>
+              <td>
+                <div class="input-group input-group-sm justify-content-center">
+                  <button class="btn btn-outline-secondary" type="button" (click)="decrement(item)">-</button>
+                  <input type="text" class="form-control text-center bg-dark text-white border-secondary" [value]="item.quantity" style="max-width: 50px;" readonly>
+                  <button class="btn btn-outline-secondary" type="button" (click)="increment(item)">+</button>
+                </div>
+                <span class="d-block text-center text-muted mt-1" style="font-size: 0.72rem;">
+                  Stock: {{ service.getProductById(item.productId)?.stock }}
+                </span>
+              </td>
+              <td class="text-end fw-bold text-emerald">
+                {{ formatearPrecio(item.precio * item.quantity) }}
+              </td>
+              <td class="text-center">
+                <button class="btn btn-link text-danger p-0 border-0" (click)="removeItem(item)" style="font-size: 1.2rem; text-decoration: none;">&times;</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Desglose de Totales & Formulario de Pago (col-12 col-lg-4) -->
+    <div class="col-12 col-lg-4" id="cart-summary-wrapper">
+      <!-- Totales -->
+      <div class="contact-card p-4 mb-4">
+        <h3 class="social-title mb-3" style="font-size: 1.25rem;">Resumen del Pedido</h3>
+        <div class="d-flex justify-content-between mb-2">
+          <span class="text-muted">Subtotal</span>
+          <span class="text-white">{{ formatearPrecio(subtotal) }}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2" *ngIf="descuento > 0">
+          <span class="text-muted">Descuento</span>
+          <span class="text-danger">-{{ formatearPrecio(descuento) }}</span>
+        </div>
+        <hr class="border-secondary">
+        <div class="d-flex justify-content-between mb-0">
+          <span class="fw-bold text-white fs-5">Total Compra</span>
+          <span class="fw-bold text-emerald fs-5">{{ formatearPrecio(total) }}</span>
+        </div>
+      </div>
+
+      <!-- Formulario Pasarela Pago (Sin validaciones complejas de JS de error, conforme a directriz 6) -->
+      <div class="contact-card p-4">
+        <h3 class="social-title mb-4" style="font-size: 1.25rem;">Pasarela de Pago</h3>
+        <form (ngSubmit)="onSubmitCheckout()">
+          
+          <div class="mb-3">
+            <label for="address" class="form-label">Dirección de Despacho *</label>
+            <input type="text" id="address" name="address" class="form-control" placeholder="Ej. Calle 1 Oriente 406, Viña del Mar" required [(ngModel)]="direccion" autocomplete="street-address">
+          </div>
+
+          <div class="mb-3">
+            <label for="card-name" class="form-label">Nombre en la Tarjeta *</label>
+            <input type="text" id="card-name" name="card-name" class="form-control" placeholder="Ej. Juan Pérez" required [(ngModel)]="tarjetaNombre">
+          </div>
+
+          <div class="mb-3">
+            <label for="card-number" class="form-label">Número de Tarjeta *</label>
+            <input type="text" id="card-number" name="card-number" class="form-control" placeholder="xxxx xxxx xxxx xxxx" required maxlen="19" [(ngModel)]="tarjetaNumero" (input)="onCardNumberInput($event)" autocomplete="cc-number">
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-4">
+              <label for="card-expiry" class="form-label">Vencimiento *</label>
+              <input type="text" id="card-expiry" name="card-expiry" class="form-control" placeholder="MM/YY" required maxlen="5" [(ngModel)]="tarjetaVence" (input)="onCardExpiryInput($event)" autocomplete="cc-exp">
+            </div>
+            <div class="col-6 mb-4">
+              <label for="card-cvv" class="form-label">CVV *</label>
+              <input type="text" id="card-cvv" name="card-cvv" class="form-control" placeholder="123" required maxlen="3" [(ngModel)]="tarjetaCvv" (input)="onCardCvvInput($event)" autocomplete="cc-csc">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Confirmar y Pagar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>

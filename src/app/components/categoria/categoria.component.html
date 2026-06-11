@@ -1,0 +1,74 @@
+<!-- Encabezado de la Categoría -->
+<section class="category-header">
+  <div class="container">
+    <h1>{{ titulo }}</h1>
+    <p>{{ descripcion }}</p>
+  </div>
+</section>
+
+<!-- Catálogo de Juegos Dinámico (Bootstrap 12-column grid) -->
+<section class="container my-5">
+  <div class="row justify-content-center">
+    
+    <!-- Mensaje si no hay productos -->
+    <div class="col-12 text-center py-5" *ngIf="productosFiltrados.length === 0">
+      <h4 class="text-muted">No hay juegos disponibles en esta categoría por el momento.</h4>
+    </div>
+
+    <!-- Lista de Productos -->
+    <div class="col-12 col-md-6 col-lg-4 mb-4 d-flex justify-content-center" *ngFor="let p of productosFiltrados">
+      <article class="game-card w-100">
+        <!-- Insignias de Descuento / Stock -->
+        <ng-container *ngIf="p.stock === 0; else hasStock">
+          <div class="bg-danger text-white position-absolute top-0 end-0 m-3 px-3 py-1 rounded fw-bold" style="z-index: 10; font-size: 0.8rem;">SIN STOCK</div>
+        </ng-container>
+        <ng-template #hasStock>
+          <div class="discount-badge" *ngIf="p.descuento > 0">{{ p.descuento }}% OFF</div>
+          <div class="regular-price-badge" *ngIf="p.descuento === 0">Precio Regular</div>
+        </ng-template>
+        
+        <div class="game-image-wrapper" [routerLink]="['/producto', p.id]" style="cursor: pointer;">
+          <img [src]="p.imagen" [alt]="p.nombre">
+        </div>
+        <div class="game-content">
+          <div>
+            <h3 class="game-title" [routerLink]="['/producto', p.id]" style="cursor: pointer;">{{ p.nombre }}</h3>
+            <p class="game-desc">{{ p.descripcion }}</p>
+          </div>
+          <div>
+            <div class="game-pricing">
+              <ng-container *ngIf="p.descuento > 0; else regularPrice">
+                <span class="price-current">{{ formatearPrecio(p.precio * (1 - p.descuento / 100)) }}</span>
+                <span class="price-old">{{ formatearPrecio(p.precio) }}</span>
+              </ng-container>
+              <ng-template #regularPrice>
+                <span class="price-current">{{ formatearPrecio(p.precio) }}</span>
+              </ng-template>
+            </div>
+            <span class="d-block text-muted mb-2" style="font-size: 0.8rem;">Disponibles: {{ p.stock }} unidades</span>
+            
+            <button class="game-btn w-100 border-0" [disabled]="p.stock === 0" (click)="agregarAlCarrito(p)" [style.cursor]="p.stock === 0 ? 'not-allowed' : 'pointer'" [style.opacity]="p.stock === 0 ? '0.5' : '1'">
+              {{ p.stock === 0 ? 'Agotado' : 'Añadir al Carrito 🛒' }}
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+<!-- Navegación Cruzada Interna (Bootstrap 5) -->
+<section class="cross-nav-section py-4">
+  <div class="container text-center">
+    <h3 class="cross-nav-title mb-4">Explora Otras Categorías Mágicas</h3>
+    <div class="d-flex justify-content-center gap-2 flex-wrap">
+      <a routerLink="/" class="cross-nav-btn">◈ Volver al Inicio</a>
+      <a routerLink="/categoria/estrategia" class="cross-nav-btn" routerLinkActive="active">Estrategia</a>
+      <a routerLink="/categoria/familiares" class="cross-nav-btn" routerLinkActive="active">Familiares</a>
+      <a routerLink="/categoria/party" class="cross-nav-btn" routerLinkActive="active">Party Games</a>
+      <a routerLink="/categoria/cooperativos" class="cross-nav-btn" routerLinkActive="active">Cooperativos</a>
+      <a routerLink="/contacto" class="cross-nav-btn">Contacto</a>
+    </div>
+  </div>
+</section>

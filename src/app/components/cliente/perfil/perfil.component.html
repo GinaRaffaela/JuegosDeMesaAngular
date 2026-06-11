@@ -1,0 +1,109 @@
+<!-- Encabezado de Sección -->
+<section class="category-header">
+  <div class="container">
+    <h1>Perfil de Arcanista</h1>
+    <p>Monitorea tu historial de compras, tus recompensas acumuladas y mantén actualizados tus datos de despacho mágicos.</p>
+  </div>
+</section>
+
+<!-- Contenido del Perfil (Rejilla de 12 columnas) -->
+<main class="container my-5">
+  <div class="row">
+      
+    <!-- Columna Izquierda: Edición de Perfil (col-12 col-lg-6) -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="contact-card p-4">
+        <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">Editar Mis Datos</h3>
+        
+        <form (ngSubmit)="onSubmitUpdate()">
+          <!-- Campo: Nombre Completo -->
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre Completo *</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" required [(ngModel)]="nombre" autocomplete="name">
+          </div>
+
+          <!-- Campo: Correo Electrónico -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico *</label>
+            <input type="email" id="email" name="email" class="form-control" required [(ngModel)]="email" autocomplete="email">
+          </div>
+
+          <!-- Campo: Fecha de Nacimiento -->
+          <div class="mb-3">
+            <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento *</label>
+            <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" class="form-control" required [(ngModel)]="fechaNacimiento">
+          </div>
+          
+          <!-- Campo: Dirección de despacho -->
+          <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección de Despacho (Opcional)</label>
+            <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406" [(ngModel)]="direccion" autocomplete="street-address">
+          </div>
+
+          <hr class="border-secondary my-4">
+          <h4 class="text-warning mb-3" style="font-size: 1.1rem;">Cambiar Contraseña (Opcional)</h4>
+          <p class="text-muted" style="font-size: 0.8rem; margin-top: -8px;">Deja estos campos en blanco si no deseas cambiar tu contraseña.</p>
+
+          <!-- Contraseña Nueva -->
+          <div class="mb-3">
+            <label for="password" class="form-label">Nueva Contraseña</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu nueva clave" [(ngModel)]="newPassword" autocomplete="new-password">
+          </div>
+
+          <!-- Confirmar Contraseña Nueva -->
+          <div class="mb-4">
+            <label for="confirm-password" class="form-label">Repetir Nueva Contraseña</label>
+            <input type="password" id="confirm-password" name="confirm-password" class="form-control" placeholder="Repite tu nueva clave" [(ngModel)]="confirmNewPassword" autocomplete="new-password">
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Historial de Compras (col-12 col-lg-6) -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="contact-card p-4">
+        <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">Mis Compras e Invocaciones</h3>
+        
+        <!-- Historial Vacío -->
+        <div *ngIf="userPurchases.length === 0" class="text-center py-5" id="purchases-empty-msg">
+          <span class="fs-1 d-block mb-3">📦</span>
+          <h4 class="text-muted">No has realizado compras aún.</h4>
+          <p class="text-muted">Tus pedidos facturados aparecerán aquí para monitorear tu inventario personal.</p>
+        </div>
+
+        <!-- Tabla Historial -->
+        <div *ngIf="userPurchases.length > 0" class="table-responsive" style="max-height: 520px; overflow-y: auto;">
+          <table class="table table-dark table-hover align-middle mb-0" style="font-size: 0.9rem; min-width: 450px;">
+            <thead>
+              <tr>
+                <th scope="col">Orden</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Detalle</th>
+                <th scope="col" class="text-end">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let purchase of userPurchases">
+                <td><strong class="text-warning">{{ purchase.id }}</strong></td>
+                <td>{{ purchase.fecha }}</td>
+                <td>
+                  <div style="font-size: 0.82rem; max-height: 100px; overflow-y: auto;">
+                    <div *ngFor="let game of purchase.juegos">
+                      • {{ game.nombre }} <span class="text-muted">(x{{ game.cantidad }})</span>
+                    </div>
+                    <div class="text-muted mt-1" style="font-size: 0.75rem;">📍 Despacho: {{ purchase.direccion }}</div>
+                  </div>
+                </td>
+                <td class="text-end fw-bold text-emerald">{{ formatearPrecio(purchase.total) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>

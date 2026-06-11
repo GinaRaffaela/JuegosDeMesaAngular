@@ -1,0 +1,115 @@
+<!-- Encabezado -->
+<section class="category-header">
+  <div class="container">
+    <h1>Mantenedor de Clientes</h1>
+    <p>Área de administración de cuentas y perfiles. Crea cuentas para nuevos arcanistas o edita roles de administrador.</p>
+  </div>
+</section>
+
+<!-- Grid de Mantenedor -->
+<main class="container my-5">
+  <div class="row">
+    
+    <!-- Columna Formulario (col-12 col-lg-5) -->
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="contact-card p-4">
+        <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">{{ formTitle }}</h3>
+        
+        <form (ngSubmit)="onSubmit()">
+          
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre Completo *</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required [(ngModel)]="nombre">
+          </div>
+
+          <div class="mb-3">
+            <label for="usuario" class="form-label">Nombre de Usuario *</label>
+            <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Ej. juanito" required [disabled]="isEditing" [(ngModel)]="usuario">
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico *</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="juan&#64;correo.com" required [(ngModel)]="email">
+          </div>
+
+          <div class="mb-3">
+            <label for="rol" class="form-label">Rol de Cuenta *</label>
+            <select id="rol" name="rol" class="form-select" required [(ngModel)]="rol">
+              <option value="" disabled selected>Seleccione el rol</option>
+              <option value="cliente">Cliente (Comprador)</option>
+              <option value="administrador">Administrador</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">{{ labelPasswordText }}</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Clave de acceso" [required]="!isEditing" [(ngModel)]="password">
+          </div>
+
+          <div class="mb-3">
+            <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento *</label>
+            <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" class="form-control" required [(ngModel)]="fechaNacimiento">
+          </div>
+
+          <div class="mb-4">
+            <label for="direccion" class="form-label">Dirección de Despacho (Opcional)</label>
+            <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406" [(ngModel)]="direccion">
+          </div>
+
+          <div class="row">
+            <div class="col-12 mb-2">
+              <button type="submit" class="btn btn-primary w-100 py-2">{{ btnSubmitText }}</button>
+            </div>
+            <div class="col-12" *ngIf="isEditing">
+              <button type="button" class="btn btn-secondary w-100 py-2" (click)="resetForm()">Cancelar Edición</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Columna Tabla Usuarios (col-12 col-lg-7) -->
+    <div class="col-12 col-lg-7 mb-4">
+      <div class="contact-card p-4">
+        <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">Cuentas Registradas</h3>
+        
+        <div class="table-responsive" style="max-height: 580px; overflow-y: auto;">
+          <table class="table table-dark table-hover align-middle mb-0" style="font-size: 0.88rem; min-width: 500px;">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Usuario</th>
+                <th scope="col">Email</th>
+                <th scope="col">Nacimiento</th>
+                <th scope="col">Rol</th>
+                <th scope="col" class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of usersList">
+                <td><strong class="text-white">{{ u.nombre }}</strong></td>
+                <td>&#64;{{ u.usuario }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.fechaNacimiento }}</td>
+                <td>
+                  <span class="badge" [class.bg-warning]="u.rol === 'administrador'" [class.text-dark]="u.rol === 'administrador'" [class.bg-emerald]="u.rol === 'cliente'">
+                    {{ u.rol | uppercase }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-warning" (click)="onEdit(u)" title="Editar">✏️</button>
+                    <button class="btn btn-danger" *ngIf="currentUser?.usuario !== u.usuario" (click)="onDelete(u)" title="Eliminar">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>

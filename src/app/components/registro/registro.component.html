@@ -1,0 +1,84 @@
+<!-- Encabezado de Sección -->
+<section class="category-header">
+  <div class="container">
+    <h1>Registro de Arcanistas</h1>
+    <p>Únete a nuestra cofradía lúdica. Regístrate para acumular recompensas estelares en tus compras y mantener un registro de tus tesoros de mesa preferidos.</p>
+  </div>
+</section>
+
+<!-- Formulario de Registro (Bootstrap 5 Grid adaptativo) -->
+<section class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="contact-card p-4 p-md-5">
+        <form (ngSubmit)="onSubmit()">
+          <div class="row">
+              
+            <!-- Campo: Nombre Completo -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="nombre" class="form-label">Nombre Completo *</label>
+              <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Matías Ignacio Pérez" required [(ngModel)]="nombre" autocomplete="name">
+            </div>
+
+            <!-- Campo: Nombre de Usuario -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="usuario" class="form-label">Nombre de Usuario *</label>
+              <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Ej. matilizard" required [(ngModel)]="usuario" autocomplete="username">
+            </div>
+
+            <!-- Campo: Correo Electrónico -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="email" class="form-label">Correo Electrónico *</label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="arcanista&#64;correo.com" required [(ngModel)]="email" autocomplete="email">
+            </div>
+
+            <!-- Campo: Rol de Usuario (Requisito de Roles) -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="rol" class="form-label">Tipo de Usuario / Rol *</label>
+              <select id="rol" name="rol" class="form-select" required [(ngModel)]="rol">
+                <option value="" disabled selected>Selecciona tu rol</option>
+                <option value="cliente">Cliente (Comprador de Juegos)</option>
+                <option value="administrador">Administrador (Gestión de Tienda)</option>
+              </select>
+            </div>
+
+            <!-- Campo: Contraseña -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="password" class="form-label">Contraseña *</label>
+              <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required [(ngModel)]="password" autocomplete="new-password">
+            </div>
+            
+            <!-- Campo: Repetir Contraseña -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="confirm-password" class="form-label">Repetir Contraseña *</label>
+              <input type="password" id="confirm-password" name="confirm-password" class="form-control" placeholder="Repite exactamente tu clave" required [(ngModel)]="confirmPassword" autocomplete="new-password">
+            </div>
+
+            <!-- Campo: Fecha de Nacimiento -->
+            <div class="col-12 col-md-6 mb-3">
+              <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento *</label>
+              <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" class="form-control" required [(ngModel)]="fechaNacimiento">
+            </div>
+            
+            <!-- Campo: Dirección de despacho -->
+            <div class="col-12 col-md-6 mb-4">
+              <label for="direccion" class="form-label">Dirección de Despacho (Opcional)</label>
+              <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406, Viña del Mar" [(ngModel)]="direccion" autocomplete="street-address">
+            </div>
+
+          </div>
+
+          <!-- Botones de Acción -->
+          <div class="row mt-3">
+            <div class="col-12 col-md-6 mb-2">
+              <button type="submit" id="btn-submit" class="btn btn-primary w-100 py-2 fs-5">Completar Registro</button>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+              <button type="button" (click)="onReset()" class="btn btn-secondary w-100 py-2 fs-5">Limpiar Formulario</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

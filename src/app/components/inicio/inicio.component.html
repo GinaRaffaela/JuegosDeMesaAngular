@@ -1,0 +1,111 @@
+<!-- Sección Hero (Diseño responsivo de Bootstrap 5) -->
+<section class="hero py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-12 col-lg-7 text-center text-lg-start mb-4 mb-lg-0">
+        <h1 class="display-3 fw-bold mb-3" style="font-family: var(--font-heading);">Bienvenid&#64; a <br><span class="text-emerald">Lagarto Arcano</span></h1>
+        <p class="text-muted fs-5 mb-4">Procuramos tener la mayor variedad y los mejores juegos de mesa modernos. Como apasionados de este hobby, nos llena de orgullo ofrecer un amplio catálogo para que puedas elegir lo que más te guste entre cientos de títulos, ya seas un jugador principiante o un experimentado arcanista de mesa. ¡Considéranos tus amigos jugones!</p>
+        <div class="d-flex justify-content-center justify-content-lg-start gap-3 flex-wrap">
+          <a href="#categorias" class="btn btn-primary px-4 py-2 fs-5">Ver Categorías</a>
+          <a routerLink="/contacto" class="btn btn-secondary px-4 py-2 fs-5">Asesoría Gratuita</a>
+        </div>
+      </div>
+      <div class="col-12 col-lg-5 d-flex justify-content-center">
+        <div class="hero-illustration">
+          <img src="assets/logo_lagarto.png" alt="Mago Lagarto Ilustración" style="max-width: 85%;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sección de Categorías (Rejilla de 12 Columnas responsiva) -->
+<section id="categorias" class="py-5">
+  <div class="container">
+    <h2 class="section-title">Nuestras Categorías Mágicas</h2>
+    
+    <div class="row justify-content-center">
+      
+      <!-- Tarjeta 1: Estrategia (col-12 col-md-6 col-lg-3) -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4 d-flex">
+        <article class="category-card w-100">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?q=80&w=600&auto=format&fit=crop" alt="Categoría Juegos de Estrategia">
+          </div>
+          <div class="category-info">
+            <h3 class="category-title">Estrategia</h3>
+            <p class="category-desc">Pon a prueba tu mente y tácticas. Toma el control del tablero, administra recursos y supera a tus rivales.</p>
+            <a routerLink="/categoria/estrategia" class="category-link">Ver catálogo <span>➔</span></a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Tarjeta 2: Familiares (col-12 col-md-6 col-lg-3) -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4 d-flex">
+        <article class="category-card w-100">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1585504198199-20277593b94f?q=80&w=600&auto=format&fit=crop" alt="Categoría Juegos Familiares">
+          </div>
+          <div class="category-info">
+            <h3 class="category-title">Familiares</h3>
+            <p class="category-desc">Diversión equilibrada para todas las edades. Reglas sencillas y dinámicas atrapantes para tardes inolvidables en familia.</p>
+            <a routerLink="/categoria/familiares" class="category-link">Ver catálogo <span>➔</span></a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Tarjeta 3: Party Games (col-12 col-md-6 col-lg-3) -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4 d-flex">
+        <article class="category-card w-100">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=600&auto=format&fit=crop" alt="Categoría Party Games">
+          </div>
+          <div class="category-info">
+            <h3 class="category-title">Party Games</h3>
+            <p class="category-desc">¡Risas garantizadas! Juegos rápidos, dinámicos y sencillos ideales para romper el hielo y jugar con muchos amigos.</p>
+            <a routerLink="/categoria/party" class="category-link">Ver catálogo <span>➔</span></a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Tarjeta 4: Cooperativos (col-12 col-md-6 col-lg-3) -->
+      <div class="col-12 col-md-6 col-lg-3 mb-4 d-flex">
+        <article class="category-card w-100">
+          <div class="category-image">
+            <img src="https://images.unsplash.com/photo-1590069261209-f8e9b8642343?q=80&w=600&auto=format&fit=crop" alt="Categoría Juegos Cooperativos">
+          </div>
+          <div class="category-info">
+            <h3 class="category-title">Cooperativos</h3>
+            <p class="category-desc">Aquí todos ganan o todos pierden. Trabaja en equipo, combina habilidades y logren juntos la victoria contra el tablero.</p>
+            <a routerLink="/categoria/cooperativos" class="category-link">Ver catálogo <span>➔</span></a>
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Sección Quiénes Somos / Redes Sociales (Bootstrap 5 Grid) -->
+<section class="about-section py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-12 col-lg-6 mb-4 mb-lg-0">
+        <h2 class="mb-4" style="font-family: var(--font-heading);">¿Quiénes son los <span class="text-warning">Arcanistas</span> detrás del Lagarto?</h2>
+        <p class="text-muted">¡Hola! Somos Gina y Matias, una pareja apasionada por el mágico e infinito mundo de los juegos de mesa. Lagarto Arcano nació como un sueño desde nuestra mesa de juego para llevar a tu hogar risas, estrategias y momentos compartidos únicos.</p>
+        <p class="text-muted">Sabemos que elegir entre tantas maravillas puede ser difícil. Por eso, nos encanta conversar con nuestros arcanistas y darles una asesoría 100% personalizada. ¡No dudes en escribirnos!</p>
+      </div>
+      <div class="col-12 col-lg-6 d-flex justify-content-center">
+        <div class="social-badge-container p-4 w-100" style="max-width: 480px;">
+          <h3 class="social-title">¡Síguenos en nuestras Redes!</h3>
+          <p class="text-muted">Comparte tus experiencias lúdicas, entérate de torneos semanales, preventas exclusivas y nuevos arribos mágicos antes que nadie.</p>
+          <div class="social-links d-flex justify-content-center gap-3">
+            <a href="https://instagram.com" target="_blank" class="social-btn" title="Instagram">📸</a>
+            <a href="https://facebook.com" target="_blank" class="social-btn" title="Facebook">👥</a>
+            <a href="https://youtube.com" target="_blank" class="social-btn" title="YouTube">🎥</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

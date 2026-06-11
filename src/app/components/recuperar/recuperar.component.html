@@ -1,0 +1,31 @@
+<main class="container my-5 py-5 d-flex justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="contact-card p-4 p-md-5">
+        <h2 class="section-title mb-4">Recuperar Clave</h2>
+        <p class="text-muted text-center mb-4">Ingresa tu correo electrónico registrado. Te enviaremos un pergamino digital con instrucciones para restablecer tu clave.</p>
+        
+        <form (ngSubmit)="onSubmit()">
+          <!-- Campo: Email -->
+          <div class="mb-4">
+            <label for="email" class="form-label">Correo Electrónico *</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="arcanista&#64;correo.com" required [(ngModel)]="email" autocomplete="email">
+          </div>
+
+          <!-- Botón Submit -->
+          <button type="submit" class="btn btn-primary w-100 py-2 fs-5 mb-3">Enviar Enlace</button>
+        </form>
+
+        <!-- Alertas de feedback -->
+        <div class="alert alert-success" *ngIf="recoverySuccess" role="alert">
+          <strong>¡Enlace Enviado!</strong> Si el correo está registrado, recibirás un mensaje mágico a la brevedad.
+        </div>
+
+        <!-- Enlaces Adicionales -->
+        <div class="text-center mt-3 fs-6">
+          <p class="mb-0"><a routerLink="/login" class="text-emerald fw-bold">Volver al Inicio de Sesión</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

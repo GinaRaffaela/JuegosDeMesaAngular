@@ -1,0 +1,107 @@
+<!-- Encabezado de Sección -->
+<section class="category-header">
+  <div class="container">
+    <h1>Contacto Arcanista</h1>
+    <p>¿Tienes dudas sobre las mecánicas de un juego? ¿Quieres saber cuándo llegará esa preventa especial o necesitas asesoría? ¡Déjanos tu mensaje y te responderemos a la velocidad de la magia!</p>
+  </div>
+</section>
+
+<!-- Formulario y Datos de Contacto (Grid Adaptativo Bootstrap 5) -->
+<main class="container my-5">
+  <div class="row">
+      
+    <!-- Columna Izquierda: Formulario (col-12 col-lg-7) -->
+    <div class="col-12 col-lg-7 mb-4">
+      <div class="contact-card p-4 p-md-5">
+        <form (ngSubmit)="enviarMensaje()">
+          
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre Completo *</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required [(ngModel)]="nombre" autocomplete="name">
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Correo Electrónico *</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="nombre&#64;correo.com" required [(ngModel)]="email" autocomplete="email">
+          </div>
+
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono de Contacto</label>
+            <input type="tel" id="telefono" name="telefono" class="form-control" placeholder="Ej. +56 9 1234 5678" [(ngModel)]="telefono">
+          </div>
+
+          <div class="mb-3">
+            <label for="juego" class="form-label">Juego o Categoría de Interés *</label>
+            <select id="juego" name="juego" class="form-select" required [(ngModel)]="juego">
+              <option value="" disabled selected>Selecciona una opción</option>
+              <option value="estrategia">Juegos de Estrategia (Catan, Carcassonne, Splendor)</option>
+              <option value="familiares">Juegos Familiares (Ticket to Ride, Dixit, King of Tokyo)</option>
+              <option value="party">Party Games (Exploding Kittens, Dobble, Jungle Speed)</option>
+              <option value="cooperativos">Juegos Cooperativos (Pandemic, Isla Prohibida, The Mind)</option>
+              <option value="asesoria">Deseo una asesoría personalizada</option>
+              <option value="otros">Otras consultas/Preventas</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label for="mensaje" class="form-label">Tu Mensaje Místico *</label>
+            <textarea id="mensaje" name="mensaje" class="form-control" placeholder="Escribe aquí tus preguntas lúdicas..." required [(ngModel)]="mensaje" style="min-height: 120px;"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Enviar Mensaje</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Panel de Datos (col-12 col-lg-5) -->
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="contact-info-panel p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
+        <div>
+          <h3 class="social-title mb-4">Nuestra Guarida Lúdica</h3>
+          
+          <div class="info-item mb-3">
+            <span class="info-icon fs-4 me-3">📍</span>
+            <div class="info-content">
+              <h4>Dirección Física</h4>
+              <p class="text-muted">1 Oriente 406, Viña del Mar, Región de Valparaíso, Chile</p>
+            </div>
+          </div>
+
+          <div class="info-item mb-3">
+            <span class="info-icon fs-4 me-3">📞</span>
+            <div class="info-content">
+              <h4>Teléfono / WhatsApp</h4>
+              <p class="text-muted">+56 9 3946 0507</p>
+            </div>
+          </div>
+
+          <div class="info-item mb-3">
+            <span class="info-icon fs-4 me-3">✉️</span>
+            <div class="info-content">
+              <h4>Correo de Soporte</h4>
+              <p class="text-muted">contacto&#64;lagartoarcano.cl</p>
+            </div>
+          </div>
+
+          <div class="info-item mb-4">
+            <span class="info-icon fs-4 me-3">⏱️</span>
+            <div class="info-content">
+              <h4>Horario de Atención</h4>
+              <p class="text-muted">Lunes a Sábado: 11:00 hrs a 20:00 hrs<br>Domingos: Cerrado (¡Jugando con la familia!)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulación de Mapa Místico con CSS puro -->
+        <div class="map-container rounded-3 p-4 text-center mt-3">
+          <div class="map-placeholder">
+            <span class="fs-1 d-block mb-2" style="text-shadow: 0 0 10px var(--color-arcane-glow);">🗺️</span>
+            <h4 style="font-family: var(--font-heading);">Viña del Mar, Chile</h4>
+            <p class="text-muted mb-0" style="font-size: 0.8rem;">1 Oriente 406. Cerca de Plaza de Viña.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
