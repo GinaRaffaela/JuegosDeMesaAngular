@@ -15,56 +15,83 @@
       <div class="contact-card p-4">
         <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">{{ formTitle }}</h3>
         
-        <form (ngSubmit)="onSubmit()">
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
           
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre del Juego *</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Dixit" required [(ngModel)]="nombre">
+            <input type="text" id="nombre" formControlName="nombre" class="form-control" [class.is-invalid]="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" placeholder="Ej. Dixit">
+            <div *ngIf="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" class="invalid-feedback">
+              El nombre del juego es requerido.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="categoria" class="form-label">Categoría *</label>
-            <select id="categoria" name="categoria" class="form-select" required [(ngModel)]="categoria">
+            <select id="categoria" formControlName="categoria" class="form-select" [class.is-invalid]="f['categoria'].invalid && (f['categoria'].dirty || f['categoria'].touched)">
               <option value="" disabled selected>Seleccione la categoría</option>
               <option value="estrategia">Estrategia</option>
               <option value="familiares">Familiares</option>
               <option value="party">Party Games</option>
               <option value="cooperativos">Cooperativos</option>
             </select>
+            <div *ngIf="f['categoria'].invalid && (f['categoria'].dirty || f['categoria'].touched)" class="invalid-feedback">
+              La categoría es requerida.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="descripcion" class="form-label">Descripción Técnica *</label>
-            <textarea id="descripcion" name="descripcion" class="form-control" placeholder="Resumen del juego..." required [(ngModel)]="descripcion" style="min-height: 80px;"></textarea>
+            <textarea id="descripcion" formControlName="descripcion" class="form-control" [class.is-invalid]="f['descripcion'].invalid && (f['descripcion'].dirty || f['descripcion'].touched)" placeholder="Resumen del juego..." style="min-height: 80px;"></textarea>
+            <div *ngIf="f['descripcion'].invalid && (f['descripcion'].dirty || f['descripcion'].touched)" class="invalid-feedback">
+              La descripción es requerida.
+            </div>
           </div>
 
           <div class="row">
             <div class="col-6 mb-3">
               <label for="precio" class="form-label">Precio (CLP) *</label>
-              <input type="number" id="precio" name="precio" class="form-control" required [(ngModel)]="precio" min="0">
+              <input type="number" id="precio" formControlName="precio" class="form-control" [class.is-invalid]="f['precio'].invalid && (f['precio'].dirty || f['precio'].touched)" min="0">
+              <div *ngIf="f['precio'].invalid && (f['precio'].dirty || f['precio'].touched)" class="invalid-feedback">
+                <span *ngIf="f['precio'].errors?.['required']">Requerido.</span>
+                <span *ngIf="f['precio'].errors?.['min']">Mínimo 0.</span>
+              </div>
             </div>
             <div class="col-6 mb-3">
               <label for="descuento" class="form-label">Descuento (%) *</label>
-              <input type="number" id="descuento" name="descuento" class="form-control" required [(ngModel)]="descuento" min="0" max="100">
+              <input type="number" id="descuento" formControlName="descuento" class="form-control" [class.is-invalid]="f['descuento'].invalid && (f['descuento'].dirty || f['descuento'].touched)" min="0" max="100">
+              <div *ngIf="f['descuento'].invalid && (f['descuento'].dirty || f['descuento'].touched)" class="invalid-feedback">
+                <span *ngIf="f['descuento'].errors?.['required']">Requerido.</span>
+                <span *ngIf="f['descuento'].errors?.['min']">Mínimo 0.</span>
+                <span *ngIf="f['descuento'].errors?.['max']">Máximo 100.</span>
+              </div>
             </div>
           </div>
 
           <div class="mb-3">
             <label for="stock" class="form-label">Stock Inicial *</label>
-            <input type="number" id="stock" name="stock" class="form-control" required [(ngModel)]="stock" min="0">
+            <input type="number" id="stock" formControlName="stock" class="form-control" [class.is-invalid]="f['stock'].invalid && (f['stock'].dirty || f['stock'].touched)" min="0">
+            <div *ngIf="f['stock'].invalid && (f['stock'].dirty || f['stock'].touched)" class="invalid-feedback">
+              <span *ngIf="f['stock'].errors?.['required']">El stock es requerido.</span>
+              <span *ngIf="f['stock'].errors?.['min']">Mínimo 0.</span>
+            </div>
           </div>
 
           <div class="mb-4">
             <label for="imagen" class="form-label">URL de la Imagen *</label>
-            <input type="text" id="imagen" name="imagen" class="form-control" placeholder="https://..." required [(ngModel)]="imagen">
+            <input type="text" id="imagen" formControlName="imagen" class="form-control" [class.is-invalid]="f['imagen'].invalid && (f['imagen'].dirty || f['imagen'].touched)" placeholder="https://...">
+            <div *ngIf="f['imagen'].invalid && (f['imagen'].dirty || f['imagen'].touched)" class="invalid-feedback">
+              La URL de la imagen es requerida.
+            </div>
           </div>
 
-          <div class="row">
-            <div class="col-12 mb-2">
-              <button type="submit" class="btn btn-primary w-100 py-2">{{ btnSubmitText }}</button>
+          <div class="row g-2">
+            <div class="col-12 col-sm-6">
+              <button type="submit" [disabled]="productForm.invalid" class="btn btn-primary w-100 py-2">{{ btnSubmitText }}</button>
             </div>
-            <div class="col-12" *ngIf="isEditing">
-              <button type="button" class="btn btn-secondary w-100 py-2" (click)="resetForm()">Cancelar Edición</button>
+            <div class="col-12 col-sm-6">
+              <button type="button" class="btn btn-secondary w-100 py-2" (click)="resetForm()">
+                {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+              </button>
             </div>
           </div>
 

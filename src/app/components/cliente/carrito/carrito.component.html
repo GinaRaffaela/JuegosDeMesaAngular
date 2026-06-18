@@ -98,38 +98,60 @@
         </div>
       </div>
 
-      <!-- Formulario Pasarela Pago (Sin validaciones complejas de JS de error, conforme a directriz 6) -->
+      <!-- Formulario Pasarela Pago -->
       <div class="contact-card p-4">
         <h3 class="social-title mb-4" style="font-size: 1.25rem;">Pasarela de Pago</h3>
-        <form (ngSubmit)="onSubmitCheckout()">
+        <form [formGroup]="checkoutForm" (ngSubmit)="onSubmitCheckout()">
           
           <div class="mb-3">
-            <label for="address" class="form-label">Dirección de Despacho *</label>
-            <input type="text" id="address" name="address" class="form-control" placeholder="Ej. Calle 1 Oriente 406, Viña del Mar" required [(ngModel)]="direccion" autocomplete="street-address">
+            <label for="address" class="form-label">Dirección de Despacho (Opcional)</label>
+            <input type="text" id="address" formControlName="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406, Viña del Mar" autocomplete="street-address">
           </div>
 
           <div class="mb-3">
             <label for="card-name" class="form-label">Nombre en la Tarjeta *</label>
-            <input type="text" id="card-name" name="card-name" class="form-control" placeholder="Ej. Juan Pérez" required [(ngModel)]="tarjetaNombre">
+            <input type="text" id="card-name" formControlName="tarjetaNombre" class="form-control" [class.is-invalid]="f['tarjetaNombre'].invalid && (f['tarjetaNombre'].dirty || f['tarjetaNombre'].touched)" placeholder="Ej. Juan Pérez">
+            <div *ngIf="f['tarjetaNombre'].invalid && (f['tarjetaNombre'].dirty || f['tarjetaNombre'].touched)" class="invalid-feedback">
+              El nombre del titular es requerido.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="card-number" class="form-label">Número de Tarjeta *</label>
-            <input type="text" id="card-number" name="card-number" class="form-control" placeholder="xxxx xxxx xxxx xxxx" required maxlen="19" [(ngModel)]="tarjetaNumero" (input)="onCardNumberInput($event)" autocomplete="cc-number">
+            <input type="text" id="card-number" formControlName="tarjetaNumero" class="form-control" [class.is-invalid]="f['tarjetaNumero'].invalid && (f['tarjetaNumero'].dirty || f['tarjetaNumero'].touched)" placeholder="xxxx xxxx xxxx xxxx" maxlength="19" (input)="onCardNumberInput($event)" autocomplete="cc-number">
+            <div *ngIf="f['tarjetaNumero'].invalid && (f['tarjetaNumero'].dirty || f['tarjetaNumero'].touched)" class="invalid-feedback">
+              <span *ngIf="f['tarjetaNumero'].errors?.['required']">El número de tarjeta es requerido.</span>
+              <span *ngIf="f['tarjetaNumero'].errors?.['pattern']">Debe tener 16 dígitos.</span>
+            </div>
           </div>
 
           <div class="row">
             <div class="col-6 mb-4">
               <label for="card-expiry" class="form-label">Vencimiento *</label>
-              <input type="text" id="card-expiry" name="card-expiry" class="form-control" placeholder="MM/YY" required maxlen="5" [(ngModel)]="tarjetaVence" (input)="onCardExpiryInput($event)" autocomplete="cc-exp">
+              <input type="text" id="card-expiry" formControlName="tarjetaVence" class="form-control" [class.is-invalid]="f['tarjetaVence'].invalid && (f['tarjetaVence'].dirty || f['tarjetaVence'].touched)" placeholder="MM/YY" maxlength="5" (input)="onCardExpiryInput($event)" autocomplete="cc-exp">
+              <div *ngIf="f['tarjetaVence'].invalid && (f['tarjetaVence'].dirty || f['tarjetaVence'].touched)" class="invalid-feedback">
+                <span *ngIf="f['tarjetaVence'].errors?.['required']">Requerido.</span>
+                <span *ngIf="f['tarjetaVence'].errors?.['pattern']">Formato MM/YY.</span>
+              </div>
             </div>
             <div class="col-6 mb-4">
               <label for="card-cvv" class="form-label">CVV *</label>
-              <input type="text" id="card-cvv" name="card-cvv" class="form-control" placeholder="123" required maxlen="3" [(ngModel)]="tarjetaCvv" (input)="onCardCvvInput($event)" autocomplete="cc-csc">
+              <input type="text" id="card-cvv" formControlName="tarjetaCvv" class="form-control" [class.is-invalid]="f['tarjetaCvv'].invalid && (f['tarjetaCvv'].dirty || f['tarjetaCvv'].touched)" placeholder="123" maxlength="3" (input)="onCardCvvInput($event)" autocomplete="cc-csc">
+              <div *ngIf="f['tarjetaCvv'].invalid && (f['tarjetaCvv'].dirty || f['tarjetaCvv'].touched)" class="invalid-feedback">
+                <span *ngIf="f['tarjetaCvv'].errors?.['required']">Requerido.</span>
+                <span *ngIf="f['tarjetaCvv'].errors?.['pattern']">3 dígitos.</span>
+              </div>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Confirmar y Pagar</button>
+          <div class="row g-2">
+            <div class="col-12 col-sm-6">
+              <button type="submit" [disabled]="checkoutForm.invalid" class="btn btn-primary w-100 py-2 fs-6">Pagar</button>
+            </div>
+            <div class="col-12 col-sm-6">
+              <button type="button" (click)="onReset()" class="btn btn-secondary w-100 py-2 fs-6">Limpiar</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>

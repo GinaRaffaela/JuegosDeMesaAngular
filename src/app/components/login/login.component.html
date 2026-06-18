@@ -4,21 +4,34 @@
       <div class="contact-card p-4 p-md-5">
         <h2 class="section-title mb-4">Iniciar Sesión</h2>
         
-        <form (ngSubmit)="onSubmit()">
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <!-- Campo: Usuario o Correo -->
           <div class="mb-3">
             <label for="identificador" class="form-label">Nombre de Usuario o Email *</label>
-            <input type="text" id="identificador" name="identificador" class="form-control" placeholder="Ej: admin o cliente&#64;gmail.com" required [(ngModel)]="identificador" autocomplete="username">
+            <input type="text" id="identificador" formControlName="identificador" class="form-control" placeholder="Ej: admin o cliente&#64;gmail.com" [class.is-invalid]="f['identificador'].invalid && (f['identificador'].dirty || f['identificador'].touched)" autocomplete="username">
+            <div class="error-feedback" *ngIf="f['identificador'].errors?.['required'] && (f['identificador'].dirty || f['identificador'].touched)">
+              El nombre de usuario o correo electrónico es requerido.
+            </div>
           </div>
 
           <!-- Campo: Contraseña -->
           <div class="mb-4">
             <label for="password" class="form-label">Contraseña *</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required [(ngModel)]="password" autocomplete="current-password">
+            <input type="password" id="password" formControlName="password" class="form-control" placeholder="Ingresa tu contraseña" [class.is-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)" autocomplete="current-password">
+            <div class="error-feedback" *ngIf="f['password'].errors?.['required'] && (f['password'].dirty || f['password'].touched)">
+              La contraseña es requerida.
+            </div>
           </div>
 
-          <!-- Botón Submit -->
-          <button type="submit" class="btn btn-primary w-100 py-2 fs-5 mb-3">Iniciar Sesión</button>
+          <!-- Botones de Acción -->
+          <div class="row g-2 mb-3">
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary w-100 py-2 fs-5" [disabled]="loginForm.invalid">Iniciar Sesión</button>
+            </div>
+            <div class="col-12">
+              <button type="button" class="btn btn-secondary w-100 py-2 fs-5" (click)="onReset()">Limpiar Formulario</button>
+            </div>
+          </div>
         </form>
 
         <!-- Alerta de feedback general de error -->

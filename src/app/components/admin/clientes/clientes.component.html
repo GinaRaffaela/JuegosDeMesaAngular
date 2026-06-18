@@ -15,53 +15,78 @@
       <div class="contact-card p-4">
         <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">{{ formTitle }}</h3>
         
-        <form (ngSubmit)="onSubmit()">
+        <form [formGroup]="clientForm" (ngSubmit)="onSubmit()">
           
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre Completo *</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required [(ngModel)]="nombre">
+            <input type="text" id="nombre" formControlName="nombre" class="form-control" [class.is-invalid]="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" placeholder="Ej. Juan Pérez">
+            <div *ngIf="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" class="invalid-feedback">
+              El nombre completo es requerido.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="usuario" class="form-label">Nombre de Usuario *</label>
-            <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Ej. juanito" required [disabled]="isEditing" [(ngModel)]="usuario">
+            <input type="text" id="usuario" formControlName="usuario" class="form-control" [class.is-invalid]="f['usuario'].invalid && (f['usuario'].dirty || f['usuario'].touched)" placeholder="Ej. juanito">
+            <div *ngIf="f['usuario'].invalid && (f['usuario'].dirty || f['usuario'].touched)" class="invalid-feedback">
+              El nombre de usuario es requerido.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="email" class="form-label">Correo Electrónico *</label>
-            <input type="email" id="email" name="email" class="form-control" placeholder="juan&#64;correo.com" required [(ngModel)]="email">
+            <input type="email" id="email" formControlName="email" class="form-control" [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)" placeholder="juan&#64;correo.com">
+            <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="invalid-feedback">
+              <span *ngIf="f['email'].errors?.['required']">El correo electrónico es requerido.</span>
+              <span *ngIf="f['email'].errors?.['email']">El formato del correo electrónico es inválido.</span>
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="rol" class="form-label">Rol de Cuenta *</label>
-            <select id="rol" name="rol" class="form-select" required [(ngModel)]="rol">
+            <select id="rol" formControlName="rol" class="form-select" [class.is-invalid]="f['rol'].invalid && (f['rol'].dirty || f['rol'].touched)">
               <option value="" disabled selected>Seleccione el rol</option>
               <option value="cliente">Cliente (Comprador)</option>
               <option value="administrador">Administrador</option>
             </select>
+            <div *ngIf="f['rol'].invalid && (f['rol'].dirty || f['rol'].touched)" class="invalid-feedback">
+              El rol es requerido.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="password" class="form-label">{{ labelPasswordText }}</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Clave de acceso" [required]="!isEditing" [(ngModel)]="password">
+            <input type="password" id="password" formControlName="password" class="form-control" [class.is-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)" placeholder="Clave de acceso">
+            <div *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)" class="invalid-feedback">
+              <span *ngIf="f['password'].errors?.['required']">La contraseña es requerida.</span>
+              <span *ngIf="f['password'].errors?.['minlength']">La contraseña debe tener entre 6 y 18 caracteres.</span>
+              <span *ngIf="f['password'].errors?.['maxlength']">La contraseña debe tener entre 6 y 18 caracteres.</span>
+              <span *ngIf="f['password'].errors?.['weakPassword']">La contraseña debe contener al menos un número y al menos una letra en mayúscula.</span>
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento *</label>
-            <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" class="form-control" required [(ngModel)]="fechaNacimiento">
+            <input type="date" id="fecha-nacimiento" formControlName="fechaNacimiento" class="form-control" [class.is-invalid]="f['fechaNacimiento'].invalid && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)">
+            <div *ngIf="f['fechaNacimiento'].invalid && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)" class="invalid-feedback">
+              <span *ngIf="f['fechaNacimiento'].errors?.['required']">La fecha de nacimiento es requerida.</span>
+              <span *ngIf="f['fechaNacimiento'].errors?.['underage']">El usuario debe ser mayor de 13 años.</span>
+            </div>
           </div>
 
           <div class="mb-4">
             <label for="direccion" class="form-label">Dirección de Despacho (Opcional)</label>
-            <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406" [(ngModel)]="direccion">
+            <input type="text" id="direccion" formControlName="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406">
           </div>
 
-          <div class="row">
-            <div class="col-12 mb-2">
-              <button type="submit" class="btn btn-primary w-100 py-2">{{ btnSubmitText }}</button>
+          <div class="row g-2">
+            <div class="col-12 col-sm-6">
+              <button type="submit" [disabled]="clientForm.invalid" class="btn btn-primary w-100 py-2">{{ btnSubmitText }}</button>
             </div>
-            <div class="col-12" *ngIf="isEditing">
-              <button type="button" class="btn btn-secondary w-100 py-2" (click)="resetForm()">Cancelar Edición</button>
+            <div class="col-12 col-sm-6">
+              <button type="button" class="btn btn-secondary w-100 py-2" (click)="resetForm()">
+                {{ isEditing ? 'Cancelar' : 'Limpiar' }}
+              </button>
             </div>
           </div>
 

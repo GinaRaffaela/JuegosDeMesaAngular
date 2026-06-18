@@ -5,15 +5,28 @@
         <h2 class="section-title mb-4">Recuperar Clave</h2>
         <p class="text-muted text-center mb-4">Ingresa tu correo electrónico registrado. Te enviaremos un pergamino digital con instrucciones para restablecer tu clave.</p>
         
-        <form (ngSubmit)="onSubmit()">
+        <form [formGroup]="recoverForm" (ngSubmit)="onSubmit()">
           <!-- Campo: Email -->
           <div class="mb-4">
             <label for="email" class="form-label">Correo Electrónico *</label>
-            <input type="email" id="email" name="email" class="form-control" placeholder="arcanista&#64;correo.com" required [(ngModel)]="email" autocomplete="email">
+            <input type="email" id="email" formControlName="email" class="form-control" placeholder="arcanista&#64;correo.com" [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)" autocomplete="email">
+            <div class="error-feedback" *ngIf="f['email'].errors?.['required'] && (f['email'].dirty || f['email'].touched)">
+              El correo electrónico es requerido.
+            </div>
+            <div class="error-feedback" *ngIf="f['email'].errors?.['email'] && !f['email'].errors?.['required'] && (f['email'].dirty || f['email'].touched)">
+              El correo electrónico debe seguir el formato de un email.
+            </div>
           </div>
 
-          <!-- Botón Submit -->
-          <button type="submit" class="btn btn-primary w-100 py-2 fs-5 mb-3">Enviar Enlace</button>
+          <!-- Botones de Acción -->
+          <div class="row g-2 mb-3">
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary w-100 py-2 fs-5" [disabled]="recoverForm.invalid">Enviar Enlace</button>
+            </div>
+            <div class="col-12">
+              <button type="button" class="btn btn-secondary w-100 py-2 fs-5" (click)="onReset()">Limpiar Formulario</button>
+            </div>
+          </div>
         </form>
 
         <!-- Alertas de feedback -->

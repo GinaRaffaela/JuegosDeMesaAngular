@@ -1,52 +1,71 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ArcaneDataService, User } from '../../services/arcane-data.service';
+import { ageValidator, passwordMatchValidator, passwordStrengthValidator } from '../../utils/custom-validators';
 
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './registro.component.html',
   styleUrl: './registro.component.css'
 })
-export class RegistroComponent {
-  nombre: string = '';
-  usuario: string = '';
-  email: string = '';
-  rol: string = '';
-  password: string = '';
-  confirmPassword: string = '';
-  fechaNacimiento: string = '';
-  direccion: string = '';
+export class RegistroComponent implements OnInit {
+  registerForm!: FormGroup;
 
   constructor(
+    private fb: FormBuilder,
     private service: ArcaneDataService,
     private router: Router
   ) {}
 
+  ngOnInit(): void {
+    this.registerForm = this.fb.group({
+      nombre: ['', Validators.required],
+      usuario: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      rol: ['', Validators.required],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(18),
+        passwordStrengthValidator
+      ]],
+      confirmPassword: ['', Validators.required],
+      fechaNacimiento: ['', [Validators.required, ageValidator(13)]],
+      direccion: [''] // Opcional
+    }, { validators: passwordMatchValidator });
+  }
+
+  get f() {
+    return this.registerForm.controls;
+  }
+
   onSubmit(): void {
-    if (this.password !== this.confirmPassword) {
-      alert('Las contraseñas no coinciden.');
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
+    const { nombre, usuario, email, rol, password, fechaNacimiento, direccion } = this.registerForm.value;
+
     const users = this.service.getUsers();
-    const exists = users.some(u => u.usuario === this.usuario || u.email === this.email);
+    const exists = users.some(u => u.usuario === usuario || u.email === email);
     if (exists) {
       alert('El nombre de usuario o correo electrónico ya está registrado.');
       return;
     }
 
     const newUser: User = {
-      nombre: this.nombre,
-      usuario: this.usuario,
-      email: this.email,
-      password: this.password,
-      fechaNacimiento: this.fechaNacimiento,
-      direccion: this.direccion || 'No especificada',
-      rol: this.rol as 'administrador' | 'cliente'
+      nombre,
+      usuario,
+      email,
+      password,
+      fechaNacimiento,
+      direccion: direccion || 'No especificada',
+      rol: rol as 'administrador' | 'cliente'
     };
 
     users.push(newUser);
@@ -57,13 +76,15 @@ export class RegistroComponent {
   }
 
   onReset(): void {
-    this.nombre = '';
-    this.usuario = '';
-    this.email = '';
-    this.rol = '';
-    this.password = '';
-    this.confirmPassword = '';
-    this.fechaNacimiento = '';
-    this.direccion = '';
+    this.registerForm.reset({
+      nombre: '',
+      usuario: '',
+      email: '',
+      rol: '',
+      password: '',
+      confirmPassword: '',
+      fechaNacimiento: '',
+      direccion: ''
+    });
   }
 }

@@ -11,59 +11,95 @@
   <div class="row justify-content-center">
     <div class="col-12 col-lg-10">
       <div class="contact-card p-4 p-md-5">
-        <form (ngSubmit)="onSubmit()">
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           <div class="row">
               
             <!-- Campo: Nombre Completo -->
             <div class="col-12 col-md-6 mb-3">
               <label for="nombre" class="form-label">Nombre Completo *</label>
-              <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Matías Ignacio Pérez" required [(ngModel)]="nombre" autocomplete="name">
+              <input type="text" id="nombre" formControlName="nombre" class="form-control" placeholder="Ej. Matías Ignacio Pérez" [class.is-invalid]="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" autocomplete="name">
+              <div class="error-feedback" *ngIf="f['nombre'].errors?.['required'] && (f['nombre'].dirty || f['nombre'].touched)">
+                El nombre completo es requerido.
+              </div>
             </div>
 
             <!-- Campo: Nombre de Usuario -->
             <div class="col-12 col-md-6 mb-3">
               <label for="usuario" class="form-label">Nombre de Usuario *</label>
-              <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Ej. matilizard" required [(ngModel)]="usuario" autocomplete="username">
+              <input type="text" id="usuario" formControlName="usuario" class="form-control" placeholder="Ej. matilizard" [class.is-invalid]="f['usuario'].invalid && (f['usuario'].dirty || f['usuario'].touched)" autocomplete="username">
+              <div class="error-feedback" *ngIf="f['usuario'].errors?.['required'] && (f['usuario'].dirty || f['usuario'].touched)">
+                El nombre de usuario es requerido.
+              </div>
             </div>
 
             <!-- Campo: Correo Electrónico -->
             <div class="col-12 col-md-6 mb-3">
               <label for="email" class="form-label">Correo Electrónico *</label>
-              <input type="email" id="email" name="email" class="form-control" placeholder="arcanista&#64;correo.com" required [(ngModel)]="email" autocomplete="email">
+              <input type="email" id="email" formControlName="email" class="form-control" placeholder="arcanista&#64;correo.com" [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)" autocomplete="email">
+              <div class="error-feedback" *ngIf="f['email'].errors?.['required'] && (f['email'].dirty || f['email'].touched)">
+                El correo electrónico es requerido.
+              </div>
+              <div class="error-feedback" *ngIf="f['email'].errors?.['email'] && !f['email'].errors?.['required'] && (f['email'].dirty || f['email'].touched)">
+                El correo electrónico debe seguir el formato de un email.
+              </div>
             </div>
 
             <!-- Campo: Rol de Usuario (Requisito de Roles) -->
             <div class="col-12 col-md-6 mb-3">
               <label for="rol" class="form-label">Tipo de Usuario / Rol *</label>
-              <select id="rol" name="rol" class="form-select" required [(ngModel)]="rol">
+              <select id="rol" formControlName="rol" class="form-select" [class.is-invalid]="f['rol'].invalid && (f['rol'].dirty || f['rol'].touched)">
                 <option value="" disabled selected>Selecciona tu rol</option>
                 <option value="cliente">Cliente (Comprador de Juegos)</option>
                 <option value="administrador">Administrador (Gestión de Tienda)</option>
               </select>
+              <div class="error-feedback" *ngIf="f['rol'].errors?.['required'] && (f['rol'].dirty || f['rol'].touched)">
+                El rol de usuario es requerido.
+              </div>
             </div>
 
             <!-- Campo: Contraseña -->
             <div class="col-12 col-md-6 mb-3">
               <label for="password" class="form-label">Contraseña *</label>
-              <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu contraseña" required [(ngModel)]="password" autocomplete="new-password">
+              <input type="password" id="password" formControlName="password" class="form-control" placeholder="6-18 carac, 1 Mayús, 1 Num" [class.is-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)" autocomplete="new-password">
+              <div class="error-feedback" *ngIf="f['password'].errors?.['required'] && (f['password'].dirty || f['password'].touched)">
+                La contraseña es requerida.
+              </div>
+              <div class="error-feedback" *ngIf="(f['password'].errors?.['minlength'] || f['password'].errors?.['maxlength']) && (f['password'].dirty || f['password'].touched)">
+                La contraseña debe tener un rango de longitud entre 6 y 18 caracteres.
+              </div>
+              <div class="error-feedback" *ngIf="f['password'].errors?.['weakPassword'] && !f['password'].errors?.['required'] && !(f['password'].errors?.['minlength'] || f['password'].errors?.['maxlength']) && (f['password'].dirty || f['password'].touched)">
+                La contraseña debe contener al menos un número y al menos una letra en mayúscula.
+              </div>
             </div>
             
             <!-- Campo: Repetir Contraseña -->
             <div class="col-12 col-md-6 mb-3">
               <label for="confirm-password" class="form-label">Repetir Contraseña *</label>
-              <input type="password" id="confirm-password" name="confirm-password" class="form-control" placeholder="Repite exactamente tu clave" required [(ngModel)]="confirmPassword" autocomplete="new-password">
+              <input type="password" id="confirm-password" formControlName="confirm-password" class="form-control" placeholder="Repite tu contraseña" [class.is-invalid]="(f['confirmPassword'].invalid || registerForm.errors?.['mismatch']) && (f['confirmPassword'].dirty || f['confirmPassword'].touched)" autocomplete="new-password">
+              <div class="error-feedback" *ngIf="f['confirmPassword'].errors?.['required'] && (f['confirmPassword'].dirty || f['confirmPassword'].touched)">
+                La confirmación de contraseña es requerida.
+              </div>
+              <div class="error-feedback" *ngIf="f['confirmPassword'].errors?.['mismatch'] && !f['confirmPassword'].errors?.['required'] && (f['confirmPassword'].dirty || f['confirmPassword'].touched)">
+                Las contraseñas deben ser iguales.
+              </div>
             </div>
 
             <!-- Campo: Fecha de Nacimiento -->
             <div class="col-12 col-md-6 mb-3">
               <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento *</label>
-              <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" class="form-control" required [(ngModel)]="fechaNacimiento">
+              <input type="date" id="fecha-nacimiento" formControlName="fechaNacimiento" class="form-control" [class.is-invalid]="f['fechaNacimiento'].invalid && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)">
+              <div class="error-feedback" *ngIf="f['fechaNacimiento'].errors?.['required'] && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)">
+                La fecha de nacimiento es requerida.
+              </div>
+              <div class="error-feedback" *ngIf="f['fechaNacimiento'].errors?.['underage'] && !f['fechaNacimiento'].errors?.['required'] && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)">
+                La persona no puede tener menos de 13 años para registrarse en el sitio web.
+              </div>
             </div>
             
             <!-- Campo: Dirección de despacho -->
             <div class="col-12 col-md-6 mb-4">
               <label for="direccion" class="form-label">Dirección de Despacho (Opcional)</label>
-              <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406, Viña del Mar" [(ngModel)]="direccion" autocomplete="street-address">
+              <input type="text" id="direccion" formControlName="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406, Viña del Mar" autocomplete="street-address">
             </div>
 
           </div>
@@ -71,7 +107,7 @@
           <!-- Botones de Acción -->
           <div class="row mt-3">
             <div class="col-12 col-md-6 mb-2">
-              <button type="submit" id="btn-submit" class="btn btn-primary w-100 py-2 fs-5">Completar Registro</button>
+              <button type="submit" id="btn-submit" class="btn btn-primary w-100 py-2 fs-5" [disabled]="registerForm.invalid">Completar Registro</button>
             </div>
             <div class="col-12 col-md-6 mb-2">
               <button type="button" (click)="onReset()" class="btn btn-secondary w-100 py-2 fs-5">Limpiar Formulario</button>

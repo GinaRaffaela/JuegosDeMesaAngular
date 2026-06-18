@@ -1,40 +1,49 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ArcaneDataService, CartItem, Purchase, PurchaseItem } from '../../../services/arcane-data.service';
 
 @Component({
   selector: 'app-carrito',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
 export class CarritoComponent implements OnInit {
   userCart: CartItem[] = [];
-  direccion: string = '';
-  tarjetaNombre: string = '';
-  tarjetaNumero: string = '';
-  tarjetaVence: string = '';
-  tarjetaCvv: string = '';
+  checkoutForm!: FormGroup;
 
   constructor(
     public service: ArcaneDataService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     // Proteger ruta
     if (!this.service.checkAccessSecurity('cliente')) return;
 
+    this.checkoutForm = this.fb.group({
+      direccion: [''], // Opcional
+      tarjetaNombre: ['', Validators.required],
+      tarjetaNumero: ['', [Validators.required, Validators.pattern(/^\d{4}\s\d{4}\s\d{4}\s\d{4}$/)]],
+      tarjetaVence: ['', [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])\/\d{2}$/)]],
+      tarjetaCvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]]
+    });
+
     const user = this.service.getCurrentUser();
     if (user) {
       this.userCart = this.service.getUserCart(user.usuario);
       if (user.direccion && user.direccion !== 'No especificada') {
-        this.direccion = user.direccion;
+        this.checkoutForm.patchValue({ direccion: user.direccion });
       }
     }
+  }
+
+  get f() {
+    return this.checkoutForm.controls;
   }
 
   get subtotal(): number {
@@ -94,7 +103,7 @@ export class CarritoComponent implements OnInit {
   onCardNumberInput(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
     value = value.match(/.{1,4}/g)?.join(' ') || value;
-    this.tarjetaNumero = value;
+    this.checkoutForm.patchValue({ tarjetaNumero: value });
   }
 
   onCardExpiryInput(event: any): void {
@@ -102,15 +111,21 @@ export class CarritoComponent implements OnInit {
     if (value.length > 2) {
       value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
-    this.tarjetaVence = value;
+    this.checkoutForm.patchValue({ tarjetaVence: value });
   }
 
   onCardCvvInput(event: any): void {
-    this.tarjetaCvv = event.target.value.replace(/\D/g, '');
+    const value = event.target.value.replace(/\D/g, '');
+    this.checkoutForm.patchValue({ tarjetaCvv: value });
   }
 
   // --- Checkout ---
   onSubmitCheckout(): void {
+    if (this.checkoutForm.invalid) {
+      this.checkoutForm.markAllAsTouched();
+      return;
+    }
+
     const user = this.service.getCurrentUser();
     if (!user) return;
 
@@ -160,7 +175,7 @@ export class CarritoComponent implements OnInit {
       fecha: new Date().toLocaleDateString('es-CL'),
       juegos: purchaseItems,
       total: totalPaid,
-      direccion: this.direccion
+      direccion: this.checkoutForm.value.direccion || 'No especificada'
     };
 
     this.service.addPurchase(purchaseTicket);
@@ -172,6 +187,17 @@ export class CarritoComponent implements OnInit {
 
     // Redirección
     this.router.navigate(['/cliente/pago-exito']);
+  }
+
+  onReset(): void {
+    const user = this.service.getCurrentUser();
+    this.checkoutForm.reset({
+      direccion: (user && user.direccion && user.direccion !== 'No especificada') ? user.direccion : '',
+      tarjetaNombre: '',
+      tarjetaNumero: '',
+      tarjetaVence: '',
+      tarjetaCvv: ''
+    });
   }
 
   formatearPrecio(value: number): string {

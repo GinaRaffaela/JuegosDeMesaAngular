@@ -1,28 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ArcaneDataService, Product } from '../../../services/arcane-data.service';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './productos.component.html',
   styleUrl: './productos.component.css'
 })
 export class ProductosComponent implements OnInit {
   productsList: Product[] = [];
-  
-  // Campos del Formulario
-  id: string = '';
-  nombre: string = '';
-  categoria: string = '';
-  descripcion: string = '';
-  precio: number | null = null;
-  descuento: number | null = null;
-  stock: number | null = null;
-  imagen: string = '';
+  productForm!: FormGroup;
+  id: string = ''; // ID del producto siendo editado
 
   isEditing: boolean = false;
   formTitle: string = 'Agregar Nuevo Juego';
@@ -30,12 +22,28 @@ export class ProductosComponent implements OnInit {
 
   constructor(
     private service: ArcaneDataService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     if (!this.service.checkAccessSecurity('administrador')) return;
+
+    this.productForm = this.fb.group({
+      nombre: ['', Validators.required],
+      categoria: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      precio: [null, [Validators.required, Validators.min(0)]],
+      descuento: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+      stock: [null, [Validators.required, Validators.min(0)]],
+      imagen: ['', Validators.required]
+    });
+
     this.cargarProductos();
+  }
+
+  get f() {
+    return this.productForm.controls;
   }
 
   cargarProductos(): void {
@@ -44,13 +52,15 @@ export class ProductosComponent implements OnInit {
 
   onEdit(p: Product): void {
     this.id = p.id;
-    this.nombre = p.nombre;
-    this.categoria = p.categoria;
-    this.descripcion = p.descripcion;
-    this.precio = p.precio;
-    this.descuento = p.descuento;
-    this.stock = p.stock;
-    this.imagen = p.imagen;
+    this.productForm.patchValue({
+      nombre: p.nombre,
+      categoria: p.categoria,
+      descripcion: p.descripcion,
+      precio: p.precio,
+      descuento: p.descuento,
+      stock: p.stock,
+      imagen: p.imagen
+    });
 
     this.isEditing = true;
     this.formTitle = 'Editar Juego';
@@ -70,17 +80,24 @@ export class ProductosComponent implements OnInit {
   }
 
   onSubmit(): void {
+    if (this.productForm.invalid) {
+      this.productForm.markAllAsTouched();
+      return;
+    }
+
+    const val = this.productForm.value;
+
     if (this.isEditing) {
       // Modo Edición
       const index = this.productsList.findIndex(p => p.id === this.id);
       if (index !== -1) {
-        this.productsList[index].nombre = this.nombre;
-        this.productsList[index].categoria = this.categoria;
-        this.productsList[index].descripcion = this.descripcion;
-        this.productsList[index].precio = this.precio || 0;
-        this.productsList[index].descuento = this.descuento || 0;
-        this.productsList[index].stock = this.stock || 0;
-        this.productsList[index].imagen = this.imagen;
+        this.productsList[index].nombre = val.nombre;
+        this.productsList[index].categoria = val.categoria;
+        this.productsList[index].descripcion = val.descripcion;
+        this.productsList[index].precio = val.precio;
+        this.productsList[index].descuento = val.descuento;
+        this.productsList[index].stock = val.stock;
+        this.productsList[index].imagen = val.imagen;
         
         this.service.saveProducts(this.productsList);
         alert('¡Juego modificado con éxito!');
@@ -89,13 +106,13 @@ export class ProductosComponent implements OnInit {
       // Modo Creación
       const newProduct: Product = {
         id: 'gen-' + Date.now(),
-        nombre: this.nombre,
-        categoria: this.categoria,
-        descripcion: this.descripcion,
-        precio: this.precio || 0,
-        descuento: this.descuento || 0,
-        stock: this.stock || 0,
-        imagen: this.imagen
+        nombre: val.nombre,
+        categoria: val.categoria,
+        descripcion: val.descripcion,
+        precio: val.precio,
+        descuento: val.descuento,
+        stock: val.stock,
+        imagen: val.imagen
       };
 
       this.productsList.push(newProduct);
@@ -108,15 +125,17 @@ export class ProductosComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.id = '';
-    this.nombre = '';
-    this.categoria = '';
-    this.descripcion = '';
-    this.precio = null;
-    this.descuento = null;
-    this.stock = null;
-    this.imagen = '';
+    this.productForm.reset({
+      nombre: '',
+      categoria: '',
+      descripcion: '',
+      precio: null,
+      descuento: null,
+      stock: null,
+      imagen: ''
+    });
     
+    this.id = '';
     this.isEditing = false;
     this.formTitle = 'Agregar Nuevo Juego';
     this.btnSubmitText = 'Guardar Producto';

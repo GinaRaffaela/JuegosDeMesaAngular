@@ -13,26 +13,33 @@
     <!-- Columna Izquierda: Formulario (col-12 col-lg-7) -->
     <div class="col-12 col-lg-7 mb-4">
       <div class="contact-card p-4 p-md-5">
-        <form (ngSubmit)="enviarMensaje()">
+        <form [formGroup]="contactForm" (ngSubmit)="enviarMensaje()">
           
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre Completo *</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required [(ngModel)]="nombre" autocomplete="name">
+            <input type="text" id="nombre" formControlName="nombre" class="form-control" [class.is-invalid]="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" placeholder="Ej. Juan Pérez" autocomplete="name">
+            <div *ngIf="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" class="invalid-feedback">
+              El nombre completo es requerido.
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="email" class="form-label">Correo Electrónico *</label>
-            <input type="email" id="email" name="email" class="form-control" placeholder="nombre&#64;correo.com" required [(ngModel)]="email" autocomplete="email">
+            <input type="email" id="email" formControlName="email" class="form-control" [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)" placeholder="nombre&#64;correo.com" autocomplete="email">
+            <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="invalid-feedback">
+              <span *ngIf="f['email'].errors?.['required']">El correo electrónico es requerido.</span>
+              <span *ngIf="f['email'].errors?.['email']">El formato del correo electrónico es inválido.</span>
+            </div>
           </div>
 
           <div class="mb-3">
             <label for="telefono" class="form-label">Teléfono de Contacto</label>
-            <input type="tel" id="telefono" name="telefono" class="form-control" placeholder="Ej. +56 9 1234 5678" [(ngModel)]="telefono">
+            <input type="tel" id="telefono" formControlName="telefono" class="form-control" placeholder="Ej. +56 9 1234 5678">
           </div>
 
           <div class="mb-3">
             <label for="juego" class="form-label">Juego o Categoría de Interés *</label>
-            <select id="juego" name="juego" class="form-select" required [(ngModel)]="juego">
+            <select id="juego" formControlName="juego" class="form-select" [class.is-invalid]="f['juego'].invalid && (f['juego'].dirty || f['juego'].touched)">
               <option value="" disabled selected>Selecciona una opción</option>
               <option value="estrategia">Juegos de Estrategia (Catan, Carcassonne, Splendor)</option>
               <option value="familiares">Juegos Familiares (Ticket to Ride, Dixit, King of Tokyo)</option>
@@ -41,14 +48,27 @@
               <option value="asesoria">Deseo una asesoría personalizada</option>
               <option value="otros">Otras consultas/Preventas</option>
             </select>
+            <div *ngIf="f['juego'].invalid && (f['juego'].dirty || f['juego'].touched)" class="invalid-feedback">
+              Debes seleccionar un juego o categoría de interés.
+            </div>
           </div>
 
           <div class="mb-4">
             <label for="mensaje" class="form-label">Tu Mensaje Místico *</label>
-            <textarea id="mensaje" name="mensaje" class="form-control" placeholder="Escribe aquí tus preguntas lúdicas..." required [(ngModel)]="mensaje" style="min-height: 120px;"></textarea>
+            <textarea id="mensaje" formControlName="mensaje" class="form-control" [class.is-invalid]="f['mensaje'].invalid && (f['mensaje'].dirty || f['mensaje'].touched)" placeholder="Escribe aquí tus preguntas lúdicas..." style="min-height: 120px;"></textarea>
+            <div *ngIf="f['mensaje'].invalid && (f['mensaje'].dirty || f['mensaje'].touched)" class="invalid-feedback">
+              El mensaje es requerido.
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Enviar Mensaje</button>
+          <div class="row g-2">
+            <div class="col-12 col-sm-6">
+              <button type="submit" [disabled]="contactForm.invalid" class="btn btn-primary w-100 py-2 fs-5">Enviar Mensaje</button>
+            </div>
+            <div class="col-12 col-sm-6">
+              <button type="button" (click)="onReset()" class="btn btn-secondary w-100 py-2 fs-5">Limpiar</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>

@@ -15,29 +15,40 @@
       <div class="contact-card p-4">
         <h3 class="mb-4 text-emerald" style="font-family: var(--font-heading);">Editar Mis Datos</h3>
         
-        <form (ngSubmit)="onSubmitUpdate()">
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmitUpdate()">
           <!-- Campo: Nombre Completo -->
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre Completo *</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" required [(ngModel)]="nombre" autocomplete="name">
+            <input type="text" id="nombre" formControlName="nombre" class="form-control" [class.is-invalid]="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" autocomplete="name">
+            <div *ngIf="f['nombre'].invalid && (f['nombre'].dirty || f['nombre'].touched)" class="invalid-feedback">
+              El nombre completo es requerido.
+            </div>
           </div>
 
           <!-- Campo: Correo Electrónico -->
           <div class="mb-3">
             <label for="email" class="form-label">Correo Electrónico *</label>
-            <input type="email" id="email" name="email" class="form-control" required [(ngModel)]="email" autocomplete="email">
+            <input type="email" id="email" formControlName="email" class="form-control" [class.is-invalid]="f['email'].invalid && (f['email'].dirty || f['email'].touched)" autocomplete="email">
+            <div *ngIf="f['email'].invalid && (f['email'].dirty || f['email'].touched)" class="invalid-feedback">
+              <span *ngIf="f['email'].errors?.['required']">El correo electrónico es requerido.</span>
+              <span *ngIf="f['email'].errors?.['email']">El formato del correo electrónico es inválido.</span>
+            </div>
           </div>
 
           <!-- Campo: Fecha de Nacimiento -->
           <div class="mb-3">
             <label for="fecha-nacimiento" class="form-label">Fecha de Nacimiento *</label>
-            <input type="date" id="fecha-nacimiento" name="fecha-nacimiento" class="form-control" required [(ngModel)]="fechaNacimiento">
+            <input type="date" id="fecha-nacimiento" formControlName="fechaNacimiento" class="form-control" [class.is-invalid]="f['fechaNacimiento'].invalid && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)">
+            <div *ngIf="f['fechaNacimiento'].invalid && (f['fechaNacimiento'].dirty || f['fechaNacimiento'].touched)" class="invalid-feedback">
+              <span *ngIf="f['fechaNacimiento'].errors?.['required']">La fecha de nacimiento es requerida.</span>
+              <span *ngIf="f['fechaNacimiento'].errors?.['underage']">Debes ser mayor de 13 años para registrarte.</span>
+            </div>
           </div>
           
           <!-- Campo: Dirección de despacho -->
           <div class="mb-3">
             <label for="direccion" class="form-label">Dirección de Despacho (Opcional)</label>
-            <input type="text" id="direccion" name="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406" [(ngModel)]="direccion" autocomplete="street-address">
+            <input type="text" id="direccion" formControlName="direccion" class="form-control" placeholder="Ej. Calle 1 Oriente 406" autocomplete="street-address">
           </div>
 
           <hr class="border-secondary my-4">
@@ -47,16 +58,32 @@
           <!-- Contraseña Nueva -->
           <div class="mb-3">
             <label for="password" class="form-label">Nueva Contraseña</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="Ingresa tu nueva clave" [(ngModel)]="newPassword" autocomplete="new-password">
+            <input type="password" id="password" formControlName="password" class="form-control" [class.is-invalid]="f['password'].invalid && (f['password'].dirty || f['password'].touched)" placeholder="Ingresa tu nueva clave" autocomplete="new-password">
+            <div *ngIf="f['password'].invalid && (f['password'].dirty || f['password'].touched)" class="invalid-feedback">
+              <span *ngIf="f['password'].errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</span>
+              <span *ngIf="f['password'].errors?.['maxlength']">La contraseña no puede superar los 18 caracteres.</span>
+              <span *ngIf="f['password'].errors?.['weakPassword']">La contraseña debe contener al menos un número y al menos una letra en mayúscula.</span>
+            </div>
           </div>
 
           <!-- Confirmar Contraseña Nueva -->
           <div class="mb-4">
             <label for="confirm-password" class="form-label">Repetir Nueva Contraseña</label>
-            <input type="password" id="confirm-password" name="confirm-password" class="form-control" placeholder="Repite tu nueva clave" [(ngModel)]="confirmNewPassword" autocomplete="new-password">
+            <input type="password" id="confirm-password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="f['confirmPassword'].invalid && (f['confirmPassword'].dirty || f['confirmPassword'].touched)" placeholder="Repite tu nueva clave" autocomplete="new-password">
+            <div *ngIf="f['confirmPassword'].invalid && (f['confirmPassword'].dirty || f['confirmPassword'].touched)" class="invalid-feedback">
+              <span *ngIf="f['confirmPassword'].errors?.['required']">Debes confirmar la contraseña.</span>
+              <span *ngIf="f['confirmPassword'].errors?.['mismatch']">Las contraseñas no coinciden.</span>
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 py-2 fs-5">Guardar Cambios</button>
+          <div class="row g-2">
+            <div class="col-12 col-sm-6">
+              <button type="submit" [disabled]="profileForm.invalid" class="btn btn-primary w-100 py-2 fs-5">Guardar</button>
+            </div>
+            <div class="col-12 col-sm-6">
+              <button type="button" (click)="onReset()" class="btn btn-secondary w-100 py-2 fs-5">Limpiar</button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
