@@ -12,22 +12,69 @@ import { ageValidator, passwordStrengthValidator } from '../../../utils/custom-v
   templateUrl: './clientes.component.html',
   styleUrl: './clientes.component.css'
 })
+/**
+ * @description Componente encargado de la administración CRUD de las cuentas de usuario y clientes.
+ * Permite cambiar roles, registrar nuevos usuarios y editar datos de despacho/desactivación.
+ */
 export class ClientesComponent implements OnInit {
+  /**
+   * @description La lista completa de usuarios registrados.
+   * @type {User[]}
+   */
   usersList: User[] = [];
+
+  /**
+   * @description Los detalles del usuario administrador autenticado en la sesión activa.
+   * @type {User | null}
+   */
   currentUser: User | null = null;
+
+  /**
+   * @description El formulario reactivo que maneja la información de la cuenta del cliente/administrador.
+   * @type {FormGroup}
+   */
   clientForm!: FormGroup;
 
+  /**
+   * @description Determina si el componente se encuentra en modo edición o modo creación.
+   * @type {boolean}
+   */
   isEditing: boolean = false;
+
+  /**
+   * @description Título dinámico para el encabezado del formulario.
+   * @type {string}
+   */
   formTitle: string = 'Agregar Cuenta';
+
+  /**
+   * @description Texto del botón de envío del formulario.
+   * @type {string}
+   */
   btnSubmitText: string = 'Guardar Cuenta';
+
+  /**
+   * @description Etiqueta dinámica para el campo de la contraseña.
+   * @type {string}
+   */
   labelPasswordText: string = 'Contraseña *';
 
+  /**
+   * @description Constructor del componente.
+   * @param {ArcaneDataService} service - Servicio de base de datos local y sesión.
+   * @param {Router} router - Servicio de enrutamiento de Angular.
+   * @param {FormBuilder} fb - Constructor de formularios reactivos.
+   */
   constructor(
     private service: ArcaneDataService,
     private router: Router,
     private fb: FormBuilder
   ) {}
 
+  /**
+   * @description Inicializa el componente, verifica accesos y configura el formulario de clientes.
+   * @returns {void}
+   */
   ngOnInit(): void {
     if (!this.service.checkAccessSecurity('administrador')) return;
     this.currentUser = this.service.getCurrentUser();
@@ -68,14 +115,27 @@ export class ClientesComponent implements OnInit {
     this.cargarUsuarios();
   }
 
+  /**
+   * @description Getter para acceder a los controladores del formulario en la plantilla HTML.
+   * @returns { { [key: string]: AbstractControl } } Los controles del formulario.
+   */
   get f() {
     return this.clientForm.controls;
   }
 
+  /**
+   * @description Carga la lista actualizada de usuarios desde el servicio central de datos.
+   * @returns {void}
+   */
   cargarUsuarios(): void {
     this.usersList = this.service.getUsers();
   }
 
+  /**
+   * @description Activa el modo edición cargando los datos del usuario seleccionado en el formulario.
+   * @param {User} u - El usuario a editar.
+   * @returns {void}
+   */
   onEdit(u: User): void {
     this.isEditing = true;
     this.formTitle = 'Editar Cuenta';
@@ -99,6 +159,11 @@ export class ClientesComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /**
+   * @description Elimina una cuenta de usuario del sistema tras pedir confirmación.
+   * @param {User} u - El usuario a eliminar.
+   * @returns {void}
+   */
   onDelete(u: User): void {
     if (this.currentUser && this.currentUser.usuario === u.usuario) {
       alert('No puedes eliminar tu propia cuenta de administrador activa.');
@@ -113,6 +178,10 @@ export class ClientesComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Procesa el envío del formulario. Si es válido, guarda los cambios de un usuario existente o registra un nuevo usuario.
+   * @returns {void}
+   */
   onSubmit(): void {
     if (this.clientForm.invalid) {
       this.clientForm.markAllAsTouched();
@@ -185,6 +254,10 @@ export class ClientesComponent implements OnInit {
     this.resetForm();
   }
 
+  /**
+   * @description Restablece todos los campos del formulario de usuario a su estado inicial.
+   * @returns {void}
+   */
   resetForm(): void {
     this.isEditing = false;
     this.formTitle = 'Agregar Cuenta';

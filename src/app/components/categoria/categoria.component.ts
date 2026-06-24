@@ -10,18 +10,51 @@ import { ArcaneDataService, Product } from '../../services/arcane-data.service';
   templateUrl: './categoria.component.html',
   styleUrl: './categoria.component.css'
 })
+/**
+ * @description Componente encargado de listar los juegos pertenecientes a una categoría específica.
+ * Filtra los productos de manera dinámica leyendo el parámetro de la ruta activa.
+ */
 export class CategoriaComponent implements OnInit {
+  /**
+   * @description El identificador/tipo de categoría recibido en la URL (ej. 'estrategia').
+   * @type {string}
+   */
   tipo: string = '';
+
+  /**
+   * @description El título estético correspondiente a la categoría activa.
+   * @type {string}
+   */
   titulo: string = '';
+
+  /**
+   * @description Breve descripción de la categoría para desplegar en el encabezado.
+   * @type {string}
+   */
   descripcion: string = '';
+
+  /**
+   * @description Listado de productos filtrados que pertenecen a esta categoría.
+   * @type {Product[]}
+   */
   productosFiltrados: Product[] = [];
 
+  /**
+   * @description Constructor del componente.
+   * @param {ActivatedRoute} route - Servicio para leer parámetros de la ruta activa.
+   * @param {Router} router - Servicio de enrutamiento de Angular.
+   * @param {ArcaneDataService} service - Servicio de base de datos local y sesión.
+   */
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: ArcaneDataService
   ) {}
 
+  /**
+   * @description Se suscribe a los cambios del parámetro de la ruta para recargar la categoría correspondiente.
+   * @returns {void}
+   */
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.tipo = params['tipo'] || '';
@@ -29,6 +62,10 @@ export class CategoriaComponent implements OnInit {
     });
   }
 
+  /**
+   * @description Carga la información de textos del switch-case y recupera de ArcaneDataService los juegos de esta categoría.
+   * @returns {void}
+   */
   cargarCategoria(): void {
     // Definir títulos y descripciones según el parámetro
     switch (this.tipo) {
@@ -59,6 +96,11 @@ export class CategoriaComponent implements OnInit {
     this.productosFiltrados = allProducts.filter(p => p.categoria === this.tipo);
   }
 
+  /**
+   * @description Añade el producto seleccionado al carrito del cliente activo. Solicita autenticación si es invitado.
+   * @param {Product} product - El producto/juego a agregar.
+   * @returns {void}
+   */
   agregarAlCarrito(product: Product): void {
     const user = this.service.getCurrentUser();
     if (!user) {
@@ -76,6 +118,11 @@ export class CategoriaComponent implements OnInit {
     alert(`¡${product.nombre} añadido al carrito con éxito!`);
   }
 
+  /**
+   * @description Formatea un número como moneda chilena (CLP).
+   * @param {number} value - El número a formatear.
+   * @returns {string} El string formateado.
+   */
   formatearPrecio(value: number): string {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
   }

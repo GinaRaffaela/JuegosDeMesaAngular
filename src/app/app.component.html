@@ -5,3 +5,70 @@
 </main>
 
 <app-footer></app-footer>
+
+<!-- Botón Flotante Místico (Orbe Mágico) -->
+<button class="magic-orbe-btn" (click)="toggleQuickNav()" title="Mapa del Sitio / Navegación Rápida">
+  <span class="orbe-inner">🧭</span>
+  <span class="orbe-pulse"></span>
+</button>
+
+<!-- Menú Lateral Superpuesto (Sidebar Drawer) -->
+<div class="magic-sidebar" [class.open]="isQuickNavOpen">
+  <div class="sidebar-header">
+    <h3>Navegación Rápida</h3>
+    <button class="close-sidebar-btn" (click)="toggleQuickNav()">&times;</button>
+  </div>
+  
+  <div class="sidebar-body">
+    <p class="section-desc">Selecciona un componente para acceder instantáneamente:</p>
+    
+    <div class="nav-group">
+      <h4>Público / Comunes</h4>
+      <ul>
+        <li><a routerLink="/" (click)="toggleQuickNav()"><span class="nav-icon">🏠</span> Inicio / Catálogo</a></li>
+        <li><a routerLink="/contacto" (click)="toggleQuickNav()"><span class="nav-icon">✉️</span> Contacto</a></li>
+        <li><a routerLink="/login" (click)="toggleQuickNav()"><span class="nav-icon">🔑</span> Iniciar Sesión</a></li>
+        <li><a routerLink="/registro" (click)="toggleQuickNav()"><span class="nav-icon">📝</span> Registrarse</a></li>
+        <li><a routerLink="/recuperar" (click)="toggleQuickNav()"><span class="nav-icon">🔄</span> Recuperar Clave</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <h4>Categorías</h4>
+      <ul>
+        <li><a routerLink="/categoria/estrategia" (click)="toggleQuickNav()"><span class="nav-icon">⚔️</span> Estrategia</a></li>
+        <li><a routerLink="/categoria/familiares" (click)="toggleQuickNav()"><span class="nav-icon">👪</span> Familiares</a></li>
+        <li><a routerLink="/categoria/party" (click)="toggleQuickNav()"><span class="nav-icon">🥳</span> Party Games</a></li>
+        <li><a routerLink="/categoria/cooperativos" (click)="toggleQuickNav()"><span class="nav-icon">🤝</span> Cooperativos</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <h4>Detalle de Producto</h4>
+      <ul>
+        <li><a routerLink="/producto/est-catan" (click)="toggleQuickNav()"><span class="nav-icon">🎲</span> Ficha Catan (Demo)</a></li>
+        <li><a routerLink="/producto/fam-dixit" (click)="toggleQuickNav()"><span class="nav-icon">🎨</span> Ficha Dixit (Demo)</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <h4>Zona Cliente</h4>
+      <ul>
+        <li><a routerLink="/cliente/carrito" (click)="toggleQuickNav()"><span class="nav-icon">🛒</span> Carrito de Compras</a></li>
+        <li><a routerLink="/cliente/perfil" (click)="toggleQuickNav()"><span class="nav-icon">👤</span> Mi Perfil Arcanista</a></li>
+        <li><a routerLink="/cliente/pago-exito" (click)="toggleQuickNav()"><span class="nav-icon">🧾</span> Pago Éxito (Simulación)</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-group">
+      <h4>Administración (CRUD)</h4>
+      <ul>
+        <li><a routerLink="/admin/productos" (click)="toggleQuickNav()"><span class="nav-icon">📦</span> Mantenedor de Productos</a></li>
+        <li><a routerLink="/admin/clientes" (click)="toggleQuickNav()"><span class="nav-icon">👥</span> Mantenedor de Clientes</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop para cerrar al hacer clic fuera -->
+<div class="magic-sidebar-backdrop" *ngIf="isQuickNavOpen" (click)="toggleQuickNav()"></div>

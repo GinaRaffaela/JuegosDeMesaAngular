@@ -5,6 +5,10 @@ import { Router, RouterLink } from '@angular/router';
 import { ArcaneDataService, User } from '../../services/arcane-data.service';
 import { ageValidator, passwordMatchValidator, passwordStrengthValidator } from '../../utils/custom-validators';
 
+/**
+ * @description Componente encargado del formulario de registro de nuevos usuarios.
+ * Aplica reglas de negocio específicas como edad mínima de 13 años y fortaleza de contraseñas.
+ */
 @Component({
   selector: 'app-registro',
   standalone: true,
@@ -13,14 +17,28 @@ import { ageValidator, passwordMatchValidator, passwordStrengthValidator } from 
   styleUrl: './registro.component.css'
 })
 export class RegistroComponent implements OnInit {
+  /**
+   * @description El formulario reactivo que maneja el registro del usuario.
+   * @type {FormGroup}
+   */
   registerForm!: FormGroup;
 
+  /**
+   * @description Constructor del componente.
+   * @param {FormBuilder} fb - Servicio para la construcción de formularios reactivos.
+   * @param {ArcaneDataService} service - Servicio de base de datos local y sesión.
+   * @param {Router} router - Servicio de navegación entre rutas.
+   */
   constructor(
     private fb: FormBuilder,
     private service: ArcaneDataService,
     private router: Router
   ) {}
 
+  /**
+   * @description Inicializa el formulario reactivo de registro de usuario con sus validadores y lógica de coincidencia.
+   * @returns {void}
+   */
   ngOnInit(): void {
     this.registerForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -39,10 +57,18 @@ export class RegistroComponent implements OnInit {
     }, { validators: passwordMatchValidator });
   }
 
+  /**
+   * @description Getter para acceder a los controladores de formulario de registro.
+   * @returns { { [key: string]: AbstractControl } } Los controles del formulario.
+   */
   get f() {
     return this.registerForm.controls;
   }
 
+  /**
+   * @description Procesa el envío del formulario de registro. Verifica unicidad de usuario/email y guarda la nueva cuenta en el localStorage.
+   * @returns {void}
+   */
   onSubmit(): void {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
@@ -75,6 +101,10 @@ export class RegistroComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
+  /**
+   * @description Restablece todos los campos del formulario de registro y limpia los errores visuales.
+   * @returns {void}
+   */
   onReset(): void {
     this.registerForm.reset({
       nombre: '',

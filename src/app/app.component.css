@@ -1,0 +1,209 @@
+/* --- Botón Flotante Místico (Orbe Mágico) --- */
+.magic-orbe-btn {
+  position: fixed;
+  left: 25px;
+  bottom: 25px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--color-lizard), #047857);
+  border: 2px solid var(--color-arcane);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1005;
+  box-shadow: 0 0 15px var(--color-lizard-glow), inset 0 0 10px rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.magic-orbe-btn:hover {
+  transform: scale(1.12) rotate(15deg);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.6), 0 0 10px var(--color-arcane-glow);
+}
+
+.orbe-inner {
+  font-size: 1.6rem;
+  line-height: 1;
+  display: inline-block;
+  animation: orbeRotate 12s linear infinite;
+}
+
+.orbe-pulse {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid var(--color-lizard-light);
+  border-radius: 50%;
+  opacity: 0;
+  animation: orbePulse 2.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes orbeRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes orbePulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* --- Menú Lateral Superpuesto (Sidebar Drawer) --- */
+.magic-sidebar {
+  position: fixed;
+  top: 0;
+  left: -320px;
+  width: 320px;
+  height: 100vh;
+  background: rgba(10, 11, 20, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--border-glass);
+  z-index: 1010;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.magic-sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h3 {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  margin: 0;
+  color: var(--color-arcane);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--color-arcane-glow);
+}
+
+.close-sidebar-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.close-sidebar-btn:hover {
+  color: var(--color-danger);
+  transform: scale(1.1);
+}
+
+.sidebar-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-glass) transparent;
+}
+
+.sidebar-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-body::-webkit-scrollbar-thumb {
+  background: var(--border-glass);
+  border-radius: var(--radius-sm);
+}
+
+.section-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.nav-group {
+  margin-bottom: 24px;
+}
+
+.nav-group h4 {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--color-lizard-light);
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.nav-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-group li {
+  margin-bottom: 8px;
+}
+
+.nav-group a {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.02);
+  transition: var(--transition-smooth);
+}
+
+.nav-group a:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+  color: var(--color-lizard-light);
+  transform: translateX(4px);
+}
+
+.nav-icon {
+  margin-right: 10px;
+  font-size: 1.1rem;
+}
+
+/* --- Backdrop --- */
+.magic-sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1008;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

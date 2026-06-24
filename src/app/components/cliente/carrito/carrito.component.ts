@@ -11,16 +11,40 @@ import { ArcaneDataService, CartItem, Purchase, PurchaseItem } from '../../../se
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.css'
 })
+/**
+ * @description Componente del carrito de compras del cliente.
+ * Permite listar los juegos seleccionados, ajustar cantidades, eliminar productos,
+ * calcular subtotales y proceder con la simulación de pago utilizando tarjetas.
+ */
 export class CarritoComponent implements OnInit {
+  /**
+   * @description La lista de artículos en el carrito del cliente activo.
+   * @type {CartItem[]}
+   */
   userCart: CartItem[] = [];
+
+  /**
+   * @description El formulario reactivo que maneja los datos de facturación y despacho.
+   * @type {FormGroup}
+   */
   checkoutForm!: FormGroup;
 
+  /**
+   * @description Constructor del componente.
+   * @param {ArcaneDataService} service - Servicio de base de datos local y sesión.
+   * @param {Router} router - Servicio de enrutamiento de Angular.
+   * @param {FormBuilder} fb - Constructor de formularios reactivos.
+   */
   constructor(
     public service: ArcaneDataService,
     private router: Router,
     private fb: FormBuilder
   ) {}
 
+  /**
+   * @description Inicializa el componente, verifica permisos y construye el formulario de checkout.
+   * @returns {void}
+   */
   ngOnInit(): void {
     // Proteger ruta
     if (!this.service.checkAccessSecurity('cliente')) return;
@@ -42,10 +66,18 @@ export class CarritoComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Getter para acceder a los controles del formulario desde la plantilla HTML.
+   * @returns { { [key: string]: any } } Los controles del formulario.
+   */
   get f() {
     return this.checkoutForm.controls;
   }
 
+  /**
+   * @description Calcula el subtotal acumulado de los ítems en el carrito usando precios originales.
+   * @returns {number} El subtotal.
+   */
   get subtotal(): number {
     return this.userCart.reduce((sum, item) => {
       const product = this.service.getProductById(item.productId);
@@ -54,6 +86,10 @@ export class CarritoComponent implements OnInit {
     }, 0);
   }
 
+  /**
+   * @description Calcula el total del descuento acumulado en el carrito de compras.
+   * @returns {number} El descuento total restado.
+   */
   get descuento(): number {
     return this.userCart.reduce((sum, item) => {
       const product = this.service.getProductById(item.productId);
@@ -65,11 +101,21 @@ export class CarritoComponent implements OnInit {
     }, 0);
   }
 
+  /**
+   * @description Calcula el monto neto total a pagar después de aplicar descuentos.
+   * @returns {number} El total neto.
+   */
   get total(): number {
     return this.subtotal - this.descuento;
   }
 
   // --- Cart Adjustments ---
+
+  /**
+   * @description Incrementa la cantidad de un ítem en el carrito respetando el stock disponible del producto.
+   * @param {CartItem} item - El ítem a incrementar.
+   * @returns {void}
+   */
   increment(item: CartItem): void {
     const product = this.service.getProductById(item.productId);
     if (product) {
@@ -82,6 +128,11 @@ export class CarritoComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Decrementa la cantidad de un ítem en el carrito de compras (mínimo 1).
+   * @param {CartItem} item - El ítem a decrementar.
+   * @returns {void}
+   */
   decrement(item: CartItem): void {
     if (item.quantity > 1) {
       item.quantity--;
@@ -89,6 +140,11 @@ export class CarritoComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Remueve por completo un producto del carrito del cliente activo pidiendo confirmación.
+   * @param {CartItem} item - El ítem del carrito a eliminar.
+   * @returns {void}
+   */
   removeItem(item: CartItem): void {
     if (confirm(`¿Quitar ${item.nombre} del carrito?`)) {
       this.service.removeFromCart(item.productId);
@@ -100,12 +156,23 @@ export class CarritoComponent implements OnInit {
   }
 
   // --- Input Masking ---
+
+  /**
+   * @description Enmascara la entrada del número de tarjeta para formatearlo como 'xxxx xxxx xxxx xxxx'.
+   * @param {any} event - El evento de entrada de teclado.
+   * @returns {void}
+   */
   onCardNumberInput(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
     value = value.match(/.{1,4}/g)?.join(' ') || value;
     this.checkoutForm.patchValue({ tarjetaNumero: value });
   }
 
+  /**
+   * @description Enmascara la entrada del vencimiento de la tarjeta formateándolo como 'MM/YY'.
+   * @param {any} event - El evento de teclado.
+   * @returns {void}
+   */
   onCardExpiryInput(event: any): void {
     let value = event.target.value.replace(/\D/g, '');
     if (value.length > 2) {
@@ -114,12 +181,22 @@ export class CarritoComponent implements OnInit {
     this.checkoutForm.patchValue({ tarjetaVence: value });
   }
 
+  /**
+   * @description Enmascara la entrada del código CVV de la tarjeta aceptando solo 3 dígitos numéricos.
+   * @param {any} event - El evento de teclado.
+   * @returns {void}
+   */
   onCardCvvInput(event: any): void {
     const value = event.target.value.replace(/\D/g, '');
     this.checkoutForm.patchValue({ tarjetaCvv: value });
   }
 
   // --- Checkout ---
+
+  /**
+   * @description Procesa la orden de compra. Valida la disponibilidad de stock, debita existencias, registra el ticket en el historial y limpia la cesta de compra.
+   * @returns {void}
+   */
   onSubmitCheckout(): void {
     if (this.checkoutForm.invalid) {
       this.checkoutForm.markAllAsTouched();
@@ -189,6 +266,10 @@ export class CarritoComponent implements OnInit {
     this.router.navigate(['/cliente/pago-exito']);
   }
 
+  /**
+   * @description Restablece todos los campos de la pasarela de pago a sus valores vacíos iniciales, conservando la dirección por defecto del cliente.
+   * @returns {void}
+   */
   onReset(): void {
     const user = this.service.getCurrentUser();
     this.checkoutForm.reset({
@@ -200,6 +281,11 @@ export class CarritoComponent implements OnInit {
     });
   }
 
+  /**
+   * @description Formatea un número en formato de moneda chilena (CLP).
+   * @param {number} value - El número a formatear.
+   * @returns {string} El string formateado en CLP.
+   */
   formatearPrecio(value: number): string {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
   }

@@ -1,7 +1,9 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 /**
- * Validador para asegurar que la persona tiene una edad mínima requerida.
+ * @description Validador personalizado para asegurar que la fecha ingresada corresponde a un usuario con una edad mínima requerida.
+ * @param {number} minAge - La edad mínima requerida en años (ej. 13).
+ * @returns {ValidatorFn} Una función de validación de Angular que retorna null si cumple o un objeto con el error 'underage' si no cumple.
  */
 export function ageValidator(minAge: number): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -22,8 +24,10 @@ export function ageValidator(minAge: number): ValidatorFn {
 }
 
 /**
- * Validador para verificar que 'password' y 'confirmPassword' coinciden.
- * Debe aplicarse al FormGroup padre.
+ * @description Validador personalizado para comprobar que los campos de contraseña ('password') y confirmación de contraseña ('confirmPassword') coinciden exactamente.
+ * Debe ser aplicado en el control padre (FormGroup).
+ * @param {AbstractControl} control - El control FormGroup que contiene los subcontroles 'password' y 'confirmPassword'.
+ * @returns {ValidationErrors | null} Un objeto con el error 'mismatch' si no coinciden, o null si la validación es exitosa.
  */
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password');
@@ -50,7 +54,9 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
 };
 
 /**
- * Validador de fortaleza de clave: al menos una mayúscula y al menos un número.
+ * @description Validador de fortaleza de clave. Requiere que la contraseña contenga por lo menos una letra mayúscula y al menos un número.
+ * @param {AbstractControl} control - El control de Angular (FormControl) a validar.
+ * @returns {ValidationErrors | null} Un objeto con el error 'weakPassword' si no cumple las reglas, o null si es válida.
  */
 export const passwordStrengthValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const value = control.value;
@@ -64,3 +70,4 @@ export const passwordStrengthValidator: ValidatorFn = (control: AbstractControl)
   const isValid = hasUppercase && hasNumber;
   return isValid ? null : { weakPassword: true };
 };
+

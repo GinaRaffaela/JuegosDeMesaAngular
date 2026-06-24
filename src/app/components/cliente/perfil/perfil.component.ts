@@ -12,16 +12,40 @@ import { ageValidator, passwordMatchValidator, passwordStrengthValidator } from 
   templateUrl: './perfil.component.html',
   styleUrl: './perfil.component.css'
 })
+/**
+ * @description Componente del perfil del cliente.
+ * Permite actualizar los datos personales, la dirección de despacho y la contraseña,
+ * además de listar el historial de compras realizadas.
+ */
 export class PerfilComponent implements OnInit {
+  /**
+   * @description El formulario reactivo que maneja la información del perfil del usuario.
+   * @type {FormGroup}
+   */
   profileForm!: FormGroup;
+
+  /**
+   * @description El listado de compras previas realizadas por el usuario actual.
+   * @type {Purchase[]}
+   */
   userPurchases: Purchase[] = [];
 
+  /**
+   * @description Constructor del componente.
+   * @param {ArcaneDataService} service - Servicio de base de datos local y sesión.
+   * @param {Router} router - Servicio de enrutamiento de Angular.
+   * @param {FormBuilder} fb - Constructor de formularios reactivos.
+   */
   constructor(
     private service: ArcaneDataService,
     private router: Router,
     private fb: FormBuilder
   ) {}
 
+  /**
+   * @description Inicializa el componente, verifica permisos y construye el formulario de perfil con validadores.
+   * @returns {void}
+   */
   ngOnInit(): void {
     if (!this.service.checkAccessSecurity('cliente')) return;
 
@@ -66,10 +90,18 @@ export class PerfilComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Getter para acceder a los controladores del formulario en la plantilla HTML.
+   * @returns { { [key: string]: AbstractControl } } Los controles del formulario.
+   */
   get f() {
     return this.profileForm.controls;
   }
 
+  /**
+   * @description Procesa la actualización de los datos del perfil en localStorage.
+   * @returns {void}
+   */
   onSubmitUpdate(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
@@ -110,6 +142,10 @@ export class PerfilComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Restablece los campos a sus valores actuales guardados del perfil en la base de datos local.
+   * @returns {void}
+   */
   onReset(): void {
     const user = this.service.getCurrentUser();
     if (user) {
@@ -124,6 +160,11 @@ export class PerfilComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Formatea un valor numérico a moneda chilena (CLP).
+   * @param {number} value - El número a formatear.
+   * @returns {string} El string formateado en CLP.
+   */
   formatearPrecio(value: number): string {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
   }

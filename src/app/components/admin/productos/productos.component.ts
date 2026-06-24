@@ -11,21 +11,63 @@ import { ArcaneDataService, Product } from '../../../services/arcane-data.servic
   templateUrl: './productos.component.html',
   styleUrl: './productos.component.css'
 })
+/**
+ * @description Componente encargado del mantenedor CRUD de productos.
+ * Permite listar, agregar, editar y eliminar juegos del catálogo de inventario.
+ */
 export class ProductosComponent implements OnInit {
+  /**
+   * @description La lista completa de productos del inventario.
+   * @type {Product[]}
+   */
   productsList: Product[] = [];
-  productForm!: FormGroup;
-  id: string = ''; // ID del producto siendo editado
 
+  /**
+   * @description El formulario reactivo que maneja la información del producto.
+   * @type {FormGroup}
+   */
+  productForm!: FormGroup;
+
+  /**
+   * @description ID del producto siendo editado en modo edición (vacío en modo creación).
+   * @type {string}
+   */
+  id: string = '';
+
+  /**
+   * @description Determina si el componente se encuentra en modo edición o modo creación.
+   * @type {boolean}
+   */
   isEditing: boolean = false;
+
+  /**
+   * @description Título dinámico para el encabezado del formulario.
+   * @type {string}
+   */
   formTitle: string = 'Agregar Nuevo Juego';
+
+  /**
+   * @description Texto del botón de envío del formulario.
+   * @type {string}
+   */
   btnSubmitText: string = 'Guardar Producto';
 
+  /**
+   * @description Constructor del componente.
+   * @param {ArcaneDataService} service - Servicio de base de datos local y sesión.
+   * @param {Router} router - Servicio de enrutamiento de Angular.
+   * @param {FormBuilder} fb - Constructor de formularios reactivos de Angular.
+   */
   constructor(
     private service: ArcaneDataService,
     private router: Router,
     private fb: FormBuilder
   ) {}
 
+  /**
+   * @description Inicializa el componente, verifica accesos y configura el formulario de productos.
+   * @returns {void}
+   */
   ngOnInit(): void {
     if (!this.service.checkAccessSecurity('administrador')) return;
 
@@ -42,14 +84,27 @@ export class ProductosComponent implements OnInit {
     this.cargarProductos();
   }
 
+  /**
+   * @description Getter para acceder a los controles del formulario en la plantilla HTML.
+   * @returns { { [key: string]: AbstractControl } } Los controles del formulario.
+   */
   get f() {
     return this.productForm.controls;
   }
 
+  /**
+   * @description Carga la lista actualizada de productos desde el servicio central de datos.
+   * @returns {void}
+   */
   cargarProductos(): void {
     this.productsList = this.service.getProducts();
   }
 
+  /**
+   * @description Activa el modo edición cargando los datos del producto seleccionado en el formulario.
+   * @param {Product} p - El producto a editar.
+   * @returns {void}
+   */
   onEdit(p: Product): void {
     this.id = p.id;
     this.productForm.patchValue({
@@ -70,6 +125,11 @@ export class ProductosComponent implements OnInit {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  /**
+   * @description Elimina un juego del catálogo de inventario tras pedir confirmación.
+   * @param {Product} p - El producto a eliminar.
+   * @returns {void}
+   */
   onDelete(p: Product): void {
     if (confirm(`¿Estás seguro/a de eliminar el juego "${p.nombre}" del catálogo de inventario?`)) {
       const updated = this.productsList.filter(prod => prod.id !== p.id);
@@ -79,6 +139,10 @@ export class ProductosComponent implements OnInit {
     }
   }
 
+  /**
+   * @description Procesa el envío del formulario. Guarda los cambios de un producto existente u registra uno nuevo.
+   * @returns {void}
+   */
   onSubmit(): void {
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
@@ -124,6 +188,10 @@ export class ProductosComponent implements OnInit {
     this.resetForm();
   }
 
+  /**
+   * @description Restablece todos los campos del formulario de producto a su estado inicial.
+   * @returns {void}
+   */
   resetForm(): void {
     this.productForm.reset({
       nombre: '',
@@ -141,6 +209,11 @@ export class ProductosComponent implements OnInit {
     this.btnSubmitText = 'Guardar Producto';
   }
 
+  /**
+   * @description Formatea un número como moneda CLP.
+   * @param {number} value - El número a formatear.
+   * @returns {string} El valor formateado.
+   */
   formatearPrecio(value: number): string {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(value);
   }

@@ -196,14 +196,25 @@ export class ArcaneDataService {
     }
   ];
 
+  /**
+   * @description Constructor del servicio ArcaneDataService. Inicializa la base de datos en localStorage si no existe.
+   * @param {Router} router - El servicio de enrutamiento de Angular para redirecciones.
+   */
   constructor(private router: Router) {
     this.initLocalStorage();
   }
 
+  /**
+   * @description Determina si la aplicación se está ejecutando en el contexto del navegador para el uso seguro de localStorage.
+   * @returns {boolean} True si está en el navegador, false de lo contrario.
+   */
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
   }
 
+  /**
+   * @description Inicializa los datos por defecto (productos, usuarios de prueba, carrito y compras) en el localStorage.
+   */
   private initLocalStorage() {
     if (!this.isBrowser()) return;
 
@@ -222,11 +233,20 @@ export class ArcaneDataService {
   }
 
   // --- Session Management ---
+
+  /**
+   * @description Recupera el usuario actualmente autenticado desde el localStorage.
+   * @returns {User | null} El objeto del usuario logueado o null si no hay sesión activa.
+   */
   getCurrentUser(): User | null {
     if (!this.isBrowser()) return null;
     return JSON.parse(localStorage.getItem('currentUser') || 'null');
   }
 
+  /**
+   * @description Guarda o elimina la sesión del usuario actual en el localStorage.
+   * @param {User | null} user - El objeto del usuario a establecer, o null para remover la sesión.
+   */
   setCurrentUser(user: User | null): void {
     if (!this.isBrowser()) return;
     if (user) {
@@ -236,11 +256,19 @@ export class ArcaneDataService {
     }
   }
 
+  /**
+   * @description Cierra la sesión activa del usuario y redirige a la página de inicio.
+   */
   logout(): void {
     this.setCurrentUser(null);
     this.router.navigate(['/']);
   }
 
+  /**
+   * @description Comprueba si el usuario tiene acceso a una ruta basándose en su rol requerido. Redirecciona en caso de no estar autorizado.
+   * @param {'cliente' | 'administrador'} [roleRequired] - El rol requerido para la ruta.
+   * @returns {boolean} True si tiene acceso permitido, false si fue redireccionado por falta de privilegios.
+   */
   checkAccessSecurity(roleRequired?: 'cliente' | 'administrador'): boolean {
     const user = this.getCurrentUser();
     if (!user) {
@@ -255,46 +283,88 @@ export class ArcaneDataService {
   }
 
   // --- Products CRUD ---
+
+  /**
+   * @description Obtiene el catálogo completo de productos/juegos guardados en localStorage.
+   * @returns {Product[]} La lista de todos los productos.
+   */
   getProducts(): Product[] {
     if (!this.isBrowser()) return [];
     return JSON.parse(localStorage.getItem('products') || '[]');
   }
 
+  /**
+   * @description Busca un juego por su identificador único en el catálogo.
+   * @param {string} id - El ID del producto.
+   * @returns {Product | undefined} El objeto del producto si se encuentra, de lo contrario undefined.
+   */
   getProductById(id: string): Product | undefined {
     return this.getProducts().find(p => p.id === id);
   }
 
+  /**
+   * @description Guarda la lista completa de productos en el localStorage.
+   * @param {Product[]} products - La nueva lista de productos a persistir.
+   */
   saveProducts(products: Product[]): void {
     if (!this.isBrowser()) return;
     localStorage.setItem('products', JSON.stringify(products));
   }
 
   // --- Users/Clients CRUD ---
+
+  /**
+   * @description Obtiene la lista completa de usuarios registrados en el sistema.
+   * @returns {User[]} La lista de usuarios registrados.
+   */
   getUsers(): User[] {
     if (!this.isBrowser()) return [];
     return JSON.parse(localStorage.getItem('registeredUsers') || '[]');
   }
 
+  /**
+   * @description Guarda la lista completa de usuarios en el localStorage.
+   * @param {User[]} users - La lista de usuarios a persistir.
+   */
   saveUsers(users: User[]): void {
     if (!this.isBrowser()) return;
     localStorage.setItem('registeredUsers', JSON.stringify(users));
   }
 
   // --- Cart Management ---
+
+  /**
+   * @description Recupera la base de datos completa de ítems de carrito de todos los usuarios.
+   * @returns {CartItem[]} La lista de ítems de carrito.
+   */
   getCart(): CartItem[] {
     if (!this.isBrowser()) return [];
     return JSON.parse(localStorage.getItem('cart') || '[]');
   }
 
+  /**
+   * @description Persiste la base de datos de carritos en el localStorage.
+   * @param {CartItem[]} cart - El nuevo arreglo de ítems del carrito.
+   */
   saveCart(cart: CartItem[]): void {
     if (!this.isBrowser()) return;
     localStorage.setItem('cart', JSON.stringify(cart));
   }
 
+  /**
+   * @description Obtiene el carrito de compras perteneciente a un usuario en específico.
+   * @param {string} username - El nombre de usuario de la cuenta.
+   * @returns {CartItem[]} El conjunto de productos en el carrito del usuario.
+   */
   getUserCart(username: string): CartItem[] {
     return this.getCart().filter(item => item.username === username);
   }
 
+  /**
+   * @description Añade un producto al carrito del usuario logueado actualmente, respetando los límites de stock disponibles.
+   * @param {Product} product - El objeto del producto a agregar.
+   * @param {number} quantity - La cantidad a añadir.
+   */
   addToCart(product: Product, quantity: number): void {
     const user = this.getCurrentUser();
     if (!user || user.rol !== 'cliente') return;
@@ -321,6 +391,11 @@ export class ArcaneDataService {
     this.saveCart(cart);
   }
 
+  /**
+   * @description Actualiza directamente la cantidad de un ítem en el carrito del usuario activo.
+   * @param {string} productId - El ID del producto a actualizar.
+   * @param {number} quantity - La nueva cantidad.
+   */
   updateCartQuantity(productId: string, quantity: number): void {
     const user = this.getCurrentUser();
     if (!user) return;
@@ -333,6 +408,10 @@ export class ArcaneDataService {
     }
   }
 
+  /**
+   * @description Elimina un ítem específico del carrito del usuario activo.
+   * @param {string} productId - El ID del producto a remover.
+   */
   removeFromCart(productId: string): void {
     const user = this.getCurrentUser();
     if (!user) return;
@@ -342,12 +421,20 @@ export class ArcaneDataService {
     this.saveCart(updated);
   }
 
+  /**
+   * @description Limpia por completo el carrito de compras de un usuario específico.
+   * @param {string} username - El nombre de usuario de la cuenta.
+   */
   clearUserCart(username: string): void {
     const cart = this.getCart();
     const updated = cart.filter(i => i.username !== username);
     this.saveCart(updated);
   }
 
+  /**
+   * @description Calcula la cantidad total de artículos en el carrito del usuario cliente actual.
+   * @returns {number} El total de artículos acumulados.
+   */
   getCartCount(): number {
     const user = this.getCurrentUser();
     if (!user || user.rol !== 'cliente') return 0;
@@ -355,31 +442,57 @@ export class ArcaneDataService {
   }
 
   // --- Purchase History ---
+
+  /**
+   * @description Obtiene el historial global de todas las compras registradas en la aplicación.
+   * @returns {Purchase[]} La lista completa de boletas de compra.
+   */
   getPurchases(): Purchase[] {
     if (!this.isBrowser()) return [];
     return JSON.parse(localStorage.getItem('purchases') || '[]');
   }
 
+  /**
+   * @description Persiste la base de datos de compras en el localStorage.
+   * @param {Purchase[]} purchases - La nueva lista de compras a guardar.
+   */
   savePurchases(purchases: Purchase[]): void {
     if (!this.isBrowser()) return;
     localStorage.setItem('purchases', JSON.stringify(purchases));
   }
 
+  /**
+   * @description Obtiene el historial de compras pertenecientes a un usuario en específico.
+   * @param {string} username - El nombre de usuario.
+   * @returns {Purchase[]} El historial de compras del usuario.
+   */
   getUserPurchases(username: string): Purchase[] {
     return this.getPurchases().filter(p => p.usuario === username);
   }
 
+  /**
+   * @description Agrega una nueva orden de compra exitosa al historial global.
+   * @param {Purchase} purchase - El objeto con los detalles de la compra.
+   */
   addPurchase(purchase: Purchase): void {
     const purchases = this.getPurchases();
     purchases.push(purchase);
     this.savePurchases(purchases);
   }
 
+  /**
+   * @description Recupera el ticket/boleta de la última compra exitosa del usuario.
+   * @returns {Purchase | null} La última compra realizada o null si no se encuentra.
+   */
   getLastPurchaseTicket(): Purchase | null {
     if (!this.isBrowser()) return null;
     return JSON.parse(localStorage.getItem('lastPurchaseTicket') || 'null');
   }
 
+  /**
+   * @description Guarda temporalmente los detalles del ticket de la última compra para su visualización.
+   * @param {Purchase | null} purchase - El objeto de la última compra, o null para removerlo.
+   */
   setLastPurchaseTicket(purchase: Purchase | null): void {
     if (!this.isBrowser()) return;
     if (purchase) {
