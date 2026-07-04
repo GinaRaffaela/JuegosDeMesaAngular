@@ -232,6 +232,81 @@ export class ArcaneDataService {
     }
   }
 
+  /**
+   * @description Sincroniza de forma asíncrona el catálogo de productos local con el archivo JSON.
+   * Importa nuevos juegos añadidos al JSON sin pisar las modificaciones hechas localmente
+   * ni reimportar juegos que el administrador haya eliminado explícitamente.
+   * @returns {Promise<void>} Una promesa que se resuelve cuando la sincronización finaliza.
+   */
+  syncWithJsonDatabase(): Promise<void> {
+    if (!this.isBrowser()) {
+      return Promise.resolve();
+    }
+
+    return fetch('assets/juegos.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al cargar juegos.json');
+        }
+        return response.json();
+      })
+      .then((jsonProducts: Product[]) => {
+        const storedProductsStr = localStorage.getItem('products');
+        const deletedIds: string[] = JSON.parse(localStorage.getItem('deletedProductIds') || '[]');
+        
+        let storedProducts: Product[] = [];
+        if (storedProductsStr) {
+          storedProducts = JSON.parse(storedProductsStr);
+        } else {
+          storedProducts = [...this.defaultProducts];
+        }
+
+        let modified = false;
+
+        jsonProducts.forEach(jp => {
+          const localIndex = storedProducts.findIndex(sp => sp.id === jp.id);
+          const wasDeleted = deletedIds.includes(jp.id);
+          
+          if (localIndex > -1) {
+            // El juego ya existe en local storage: sincronizamos sus propiedades descriptivas y comerciales
+            // pero conservamos el stock local (que puede haber cambiado por compras o CRUD)
+            const localProduct = storedProducts[localIndex];
+            
+            if (
+              localProduct.nombre !== jp.nombre ||
+              localProduct.categoria !== jp.categoria ||
+              localProduct.descripcion !== jp.descripcion ||
+              localProduct.precio !== jp.precio ||
+              localProduct.descuento !== jp.descuento ||
+              localProduct.imagen !== jp.imagen
+            ) {
+              storedProducts[localIndex] = {
+                ...localProduct,
+                nombre: jp.nombre,
+                categoria: jp.categoria,
+                descripcion: jp.descripcion,
+                precio: jp.precio,
+                descuento: jp.descuento,
+                imagen: jp.imagen
+              };
+              modified = true;
+            }
+          } else if (!wasDeleted) {
+            // Es un juego nuevo en el JSON y no ha sido eliminado por el administrador
+            storedProducts.push(jp);
+            modified = true;
+          }
+        });
+
+        if (modified) {
+          localStorage.setItem('products', JSON.stringify(storedProducts));
+        }
+      })
+      .catch(error => {
+        console.error('Error al sincronizar con juegos.json:', error);
+      });
+  }
+
   // --- Session Management ---
 
   /**
@@ -303,11 +378,24 @@ export class ArcaneDataService {
   }
 
   /**
-   * @description Guarda la lista completa de productos en el localStorage.
+   * @description Guarda la lista completa de productos en el localStorage, detectando y registrando los productos eliminados.
    * @param {Product[]} products - La nueva lista de productos a persistir.
    */
   saveProducts(products: Product[]): void {
     if (!this.isBrowser()) return;
+    
+    // Obtener productos actuales antes de guardar para detectar cuáles fueron eliminados
+    const oldProducts = this.getProducts();
+    const deletedIds: string[] = JSON.parse(localStorage.getItem('deletedProductIds') || '[]');
+    
+    oldProducts.forEach(op => {
+      const exists = products.some(p => p.id === op.id);
+      if (!exists && !deletedIds.includes(op.id)) {
+        deletedIds.push(op.id);
+      }
+    });
+    
+    localStorage.setItem('deletedProductIds', JSON.stringify(deletedIds));
     localStorage.setItem('products', JSON.stringify(products));
   }
 

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "est-catan",
+    "nombre": "Catan",
+    "categoria": "estrategia",
+    "descripcion": "Funda tus pueblos, traza rutas comerciales clave y compite astutamente por el control de los valiosos recursos de la isla de Catan.",
+    "precio": 34990,
+    "descuento": 15,
+    "stock": 8,
+    "imagen": "https://images.unsplash.com/photo-1605870445919-838d190e8e1b?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "est-carcassonne",
+    "nombre": "Carcassonne",
+    "categoria": "estrategia",
+    "descripcion": "Crea un precioso paisaje medieval loseta por loseta. Ubica estratégicamente a tus caballeros, ladrones y monjes en caminos y castillos.",
+    "precio": 28990,
+    "descuento": 0,
+    "stock": 12,
+    "imagen": "https://images.unsplash.com/photo-1611195974226-a6a9be9dd763?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "est-splendor",
+    "nombre": "Splendor",
+    "categoria": "estrategia",
+    "descripcion": "Conviértete en un comerciante rico y prestigioso del Renacimiento. Adquiere gemas exclusivas, barcos de transporte y contrata artesanos.",
+    "precio": 32990,
+    "descuento": 10,
+    "stock": 5,
+    "imagen": "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "fam-ticket",
+    "nombre": "Ticket to Ride",
+    "categoria": "familiares",
+    "descripcion": "¡Una aventura ferroviaria! Reúne cartas de vagones de colores para conectar ciudades de Norteamérica y completar tus rutas secretas.",
+    "precio": 39990,
+    "descuento": 20,
+    "stock": 10,
+    "imagen": "https://images.unsplash.com/photo-1543783207-ec64e4d95325?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "fam-dixit",
+    "nombre": "Dixit",
+    "categoria": "familiares",
+    "descripcion": "Despierta tu creatividad. Narra pistas místicas inspiradas en hermosas e inusuales cartas ilustradas para que tus amigos las descubran.",
+    "precio": 24990,
+    "descuento": 0,
+    "stock": 15,
+    "imagen": "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "fam-kingoftokyo",
+    "nombre": "King of Tokyo",
+    "categoria": "familiares",
+    "descripcion": "Juega como un monstruo mutante gigante o un robot colosal. Lanza los dados para curarte, ganar energía o atacar ferozmente a tus rivales.",
+    "precio": 35990,
+    "descuento": 15,
+    "stock": 6,
+    "imagen": "https://images.unsplash.com/photo-1553481187-be93c21490a9?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "pty-exploding",
+    "nombre": "Exploding Kittens",
+    "categoria": "party",
+    "descripcion": "¡Una ruleta rusa con gatitos explosivos y rayos láser! Evita a toda costa robar el gatito explosivo usando cartas de desactivación.",
+    "precio": 19990,
+    "descuento": 0,
+    "stock": 20,
+    "imagen": "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "pty-dobble",
+    "nombre": "Dobble",
+    "categoria": "party",
+    "descripcion": "¡El juego de velocidad visual definitivo! Encuentra el único símbolo coincidente entre dos cartas antes que tus oponentes.",
+    "precio": 14990,
+    "descuento": 10,
+    "stock": 25,
+    "imagen": "https://images.unsplash.com/photo-1589802829985-817e51171b92?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "pty-junglespeed",
+    "nombre": "Jungle Speed",
+    "categoria": "party",
+    "descripcion": "Revela tus cartas y sé extremadamente rápido en atrapar el tótem de madera central cuando las formas coincidan exactamente.",
+    "precio": 21990,
+    "descuento": 15,
+    "stock": 4,
+    "imagen": "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "cop-pandemic",
+    "nombre": "Pandemic",
+    "categoria": "cooperativos",
+    "descripcion": "¡Salven al planeta entero de epidemias catastróficas! Encarnen a especialistas que viajan conteniendo brotes mientras buscan curas.",
+    "precio": 38990,
+    "descuento": 15,
+    "stock": 7,
+    "imagen": "https://images.unsplash.com/photo-1584483766114-2cea6facdf57?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "cop-island",
+    "nombre": "Isla Prohibida",
+    "categoria": "cooperativos",
+    "descripcion": "Coordinen habilidades en equipo para recuperar cuatro reliquias místicas ocultas en una isla que se sumerge segundo a segundo.",
+    "precio": 26990,
+    "descuento": 0,
+    "stock": 9,
+    "imagen": "https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=400&auto=format&fit=crop"
+  },
+  {
+    "id": "cop-themind",
+    "nombre": "The Mind",
+    "categoria": "cooperativos",
+    "descripcion": "Consigan apilar en orden numérico ascendente todas las cartas de sus manos sin hablar, gesticular, ni mandarse señales explícitas.",
+    "precio": 12990,
+    "descuento": 10,
+    "stock": 14,
+    "imagen": "https://images.unsplash.com/photo-1628157582853-a796fa650a6a?q=80&w=400&auto=format&fit=crop"
+  }
+]
