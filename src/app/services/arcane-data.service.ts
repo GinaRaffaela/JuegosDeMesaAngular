@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface Product {
   id: string;
@@ -196,11 +198,18 @@ export class ArcaneDataService {
     }
   ];
 
+  private firebaseDbUrl = 'https://juegos-de-mesa-angular-default-rtdb.firebaseio.com/';
+
+  private get dbUrlClean(): string {
+    return this.firebaseDbUrl.replace(/\/$/, '');
+  }
+
   /**
    * @description Constructor del servicio ArcaneDataService. Inicializa la base de datos en localStorage si no existe.
    * @param {Router} router - El servicio de enrutamiento de Angular para redirecciones.
+   * @param {HttpClient} http - Cliente HTTP para realizar peticiones REST a Firebase.
    */
-  constructor(private router: Router) {
+  constructor(private router: Router, private http: HttpClient) {
     this.initLocalStorage();
   }
 
@@ -233,78 +242,132 @@ export class ArcaneDataService {
   }
 
   /**
-   * @description Sincroniza de forma asíncrona el catálogo de productos local con el archivo JSON.
-   * Importa nuevos juegos añadidos al JSON sin pisar las modificaciones hechas localmente
-   * ni reimportar juegos que el administrador haya eliminado explícitamente.
+   * @description Sincroniza de forma asíncrona el catálogo de productos local con Firebase Realtime Database.
+   * Realiza un GET a Firebase. Si la base de datos está vacía, la inicializa con el catálogo base de 12 juegos.
+   * Si ya contiene datos, sincroniza e importa nuevos productos respetando el stock local y los juegos eliminados.
    * @returns {Promise<void>} Una promesa que se resuelve cuando la sincronización finaliza.
    */
-  syncWithJsonDatabase(): Promise<void> {
+  syncWithFirebaseDatabase(): Promise<void> {
     if (!this.isBrowser()) {
       return Promise.resolve();
     }
 
-    return fetch('assets/juegos.json')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al cargar juegos.json');
-        }
-        return response.json();
-      })
-      .then((jsonProducts: Product[]) => {
-        const storedProductsStr = localStorage.getItem('products');
-        const deletedIds: string[] = JSON.parse(localStorage.getItem('deletedProductIds') || '[]');
-        
-        let storedProducts: Product[] = [];
-        if (storedProductsStr) {
-          storedProducts = JSON.parse(storedProductsStr);
-        } else {
-          storedProducts = [...this.defaultProducts];
-        }
+    return new Promise((resolve) => {
+      this.http.get<{ [key: string]: Product }>(`${this.dbUrlClean}/products.json`)
+        .subscribe({
+          next: (data) => {
+            if (!data) {
+              // Si la base de datos remota está vacía (primer arranque), la inicializamos
+              console.log('Firebase Realtime Database está vacía. Inicializando...');
+              this.initializeFirebaseWithDefaults().then(resolve);
+            } else {
+              // Convertir objeto de Firebase (key: Product) a array de productos
+              const fbProducts = Object.values(data);
+              const storedProductsStr = localStorage.getItem('products');
+              const deletedIds: string[] = JSON.parse(localStorage.getItem('deletedProductIds') || '[]');
 
-        let modified = false;
+              let storedProducts: Product[] = [];
+              if (storedProductsStr) {
+                storedProducts = JSON.parse(storedProductsStr);
+              } else {
+                storedProducts = [...this.defaultProducts];
+              }
 
-        jsonProducts.forEach(jp => {
-          const localIndex = storedProducts.findIndex(sp => sp.id === jp.id);
-          const wasDeleted = deletedIds.includes(jp.id);
-          
-          if (localIndex > -1) {
-            // El juego ya existe en local storage: sincronizamos sus propiedades descriptivas y comerciales
-            // pero conservamos el stock local (que puede haber cambiado por compras o CRUD)
-            const localProduct = storedProducts[localIndex];
-            
-            if (
-              localProduct.nombre !== jp.nombre ||
-              localProduct.categoria !== jp.categoria ||
-              localProduct.descripcion !== jp.descripcion ||
-              localProduct.precio !== jp.precio ||
-              localProduct.descuento !== jp.descuento ||
-              localProduct.imagen !== jp.imagen
-            ) {
-              storedProducts[localIndex] = {
-                ...localProduct,
-                nombre: jp.nombre,
-                categoria: jp.categoria,
-                descripcion: jp.descripcion,
-                precio: jp.precio,
-                descuento: jp.descuento,
-                imagen: jp.imagen
-              };
-              modified = true;
+              let modified = false;
+
+              fbProducts.forEach(fp => {
+                const localIndex = storedProducts.findIndex(sp => sp.id === fp.id);
+                const wasDeleted = deletedIds.includes(fp.id);
+
+                if (localIndex > -1) {
+                  const localProduct = storedProducts[localIndex];
+                  if (
+                    localProduct.nombre !== fp.nombre ||
+                    localProduct.categoria !== fp.categoria ||
+                    localProduct.descripcion !== fp.descripcion ||
+                    localProduct.precio !== fp.precio ||
+                    localProduct.descuento !== fp.descuento ||
+                    localProduct.imagen !== fp.imagen
+                  ) {
+                    storedProducts[localIndex] = {
+                      ...localProduct,
+                      nombre: fp.nombre,
+                      categoria: fp.categoria,
+                      descripcion: fp.descripcion,
+                      precio: fp.precio,
+                      descuento: fp.descuento,
+                      imagen: fp.imagen
+                    };
+                    modified = true;
+                  }
+                } else if (!wasDeleted) {
+                  storedProducts.push(fp);
+                  modified = true;
+                }
+              });
+
+              localStorage.setItem('products', JSON.stringify(storedProducts));
+              console.log('Sincronización con Firebase finalizada.');
+              resolve();
             }
-          } else if (!wasDeleted) {
-            // Es un juego nuevo en el JSON y no ha sido eliminado por el administrador
-            storedProducts.push(jp);
-            modified = true;
+          },
+          error: (err) => {
+            console.error('Error al conectar con Firebase Realtime Database. Usando base de datos local:', err);
+            resolve();
           }
         });
+    });
+  }
 
-        if (modified) {
-          localStorage.setItem('products', JSON.stringify(storedProducts));
-        }
-      })
-      .catch(error => {
-        console.error('Error al sincronizar con juegos.json:', error);
-      });
+  /**
+   * @description Inicializa la base de datos de Firebase Realtime Database consumiendo la información del archivo local juegos.json.
+   * Utiliza una llamada HTTP PUT para guardar la lista estructurada de productos en el servidor remoto.
+   * @returns {Promise<void>} Promesa de resolución del estado.
+   */
+  private initializeFirebaseWithDefaults(): Promise<void> {
+    return new Promise((resolve) => {
+      // 1. Leer el archivo JSON local
+      this.http.get<Product[]>('assets/juegos.json')
+        .subscribe({
+          next: (jsonProducts) => {
+            const dataMap: { [key: string]: Product } = {};
+            jsonProducts.forEach(p => {
+              dataMap[p.id] = p;
+            });
+
+            // 2. Subir el mapa estructurado a Firebase
+            this.http.put(`${this.dbUrlClean}/products.json`, dataMap)
+              .subscribe({
+                next: () => {
+                  console.log('Firebase inicializado exitosamente usando el archivo juegos.json.');
+                  localStorage.setItem('products', JSON.stringify(jsonProducts));
+                  resolve();
+                },
+                error: (err) => {
+                  console.error('Error al subir catálogo a Firebase:', err);
+                  resolve();
+                }
+              });
+          },
+          error: (err) => {
+            console.error('Error al cargar juegos.json local para inicializar Firebase. Usando fallback de código:', err);
+            // Fallback secundario con la lista integrada si el archivo JSON no es accesible
+            const dataMap: { [key: string]: Product } = {};
+            this.defaultProducts.forEach(p => {
+              dataMap[p.id] = p;
+            });
+
+            this.http.put(`${this.dbUrlClean}/products.json`, dataMap)
+              .subscribe({
+                next: () => {
+                  localStorage.setItem('products', JSON.stringify(this.defaultProducts));
+                  resolve();
+                },
+                error: () => resolve()
+              });
+          }
+        });
+    });
   }
 
   // --- Session Management ---
@@ -378,7 +441,7 @@ export class ArcaneDataService {
   }
 
   /**
-   * @description Guarda la lista completa de productos en el localStorage, detectando y registrando los productos eliminados.
+   * @description Guarda la lista completa de productos en el localStorage, detectando y registrando los productos eliminados, y sincroniza los cambios (creaciones, ediciones y eliminaciones) con Firebase Realtime Database.
    * @param {Product[]} products - La nueva lista de productos a persistir.
    */
   saveProducts(products: Product[]): void {
@@ -388,15 +451,46 @@ export class ArcaneDataService {
     const oldProducts = this.getProducts();
     const deletedIds: string[] = JSON.parse(localStorage.getItem('deletedProductIds') || '[]');
     
+    // 1. Detectar eliminados y aplicar DELETE en Firebase
     oldProducts.forEach(op => {
       const exists = products.some(p => p.id === op.id);
-      if (!exists && !deletedIds.includes(op.id)) {
-        deletedIds.push(op.id);
+      if (!exists) {
+        if (!deletedIds.includes(op.id)) {
+          deletedIds.push(op.id);
+        }
+        this.http.delete(`${this.dbUrlClean}/products/${op.id}.json`)
+          .subscribe({
+            next: () => console.log(`Producto ${op.id} eliminado de Firebase.`),
+            error: (err) => console.error(`Error al eliminar ${op.id} de Firebase:`, err)
+          });
+      }
+    });
+    
+    // 2. Detectar nuevos o modificados y aplicar PUT en Firebase
+    products.forEach(p => {
+      const oldP = oldProducts.find(op => op.id === p.id);
+      const hasChanged = !oldP || JSON.stringify(oldP) !== JSON.stringify(p);
+      
+      if (hasChanged) {
+        this.http.put(`${this.dbUrlClean}/products/${p.id}.json`, p)
+          .subscribe({
+            next: () => console.log(`Producto ${p.id} guardado/actualizado en Firebase.`),
+            error: (err) => console.error(`Error al guardar ${p.id} en Firebase:`, err)
+          });
       }
     });
     
     localStorage.setItem('deletedProductIds', JSON.stringify(deletedIds));
     localStorage.setItem('products', JSON.stringify(products));
+  }
+
+  /**
+   * @description Envía un mensaje de contacto a Firebase mediante una solicitud HTTP POST.
+   * @param {any} message - Objeto con los datos del mensaje de contacto.
+   * @returns {Observable<any>} Observable del resultado de la petición POST.
+   */
+  enviarMensajeContacto(message: any): Observable<any> {
+    return this.http.post(`${this.dbUrlClean}/contacto.json`, message);
   }
 
   // --- Users/Clients CRUD ---

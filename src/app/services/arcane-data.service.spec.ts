@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ArcaneDataService, Product, User } from './arcane-data.service';
 
 describe('ArcaneDataService', () => {
@@ -15,6 +17,8 @@ describe('ArcaneDataService', () => {
     TestBed.configureTestingModule({
       providers: [
         ArcaneDataService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: Router, useValue: spy }
       ]
     });

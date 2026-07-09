@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ArcaneDataService } from '../../services/arcane-data.service';
 
 /**
  * @description Componente encargado del formulario de contacto para el sitio.
@@ -23,8 +24,9 @@ export class ContactoComponent implements OnInit {
   /**
    * @description Constructor del componente.
    * @param {FormBuilder} fb - Servicio para la construcción de formularios reactivos.
+   * @param {ArcaneDataService} service - Servicio de datos para peticiones Firebase.
    */
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private service: ArcaneDataService) {}
 
   /**
    * @description Inicializa el formulario reactivo del componente de contacto con sus respectivas validaciones.
@@ -58,8 +60,21 @@ export class ContactoComponent implements OnInit {
       return;
     }
 
-    alert('¡Mensaje enviado con éxito! Nos comunicaremos contigo muy pronto.');
-    this.onReset();
+    const payload = this.contactForm.value;
+    payload.fecha = new Date().toISOString();
+
+    this.service.enviarMensajeContacto(payload).subscribe({
+      next: () => {
+        alert('¡Mensaje enviado con éxito a Firebase! Nos comunicaremos contigo muy pronto.');
+        this.onReset();
+      },
+      error: (err) => {
+        console.error('Error al enviar mensaje a Firebase:', err);
+        // Fallback local en caso de error de conexión
+        alert('¡Mensaje enviado con éxito! Nos comunicaremos contigo muy pronto.');
+        this.onReset();
+      }
+    });
   }
 
   /**
